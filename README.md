@@ -39,9 +39,11 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 
 <img width="686" height="276" alt="Screenshot 2026-08-10 at 16 39 45" src="https://github.com/user-attachments/assets/c41c7616-cda0-4d18-8697-23b3af8e49d4" />
 
-2. Run the workshop1 pipeline we have created for you. It will deploy the application we are going to run our tests on.
+2. Run the **workshop1** pipeline we have created for you. It will deploy the application we are going to run our tests on.
 
 <img width="1329" height="273" alt="Screenshot 2026-08-10 at 16 40 04" src="https://github.com/user-attachments/assets/50f34f9f-c2cd-4135-aeca-66220444a52c" />
+
+3. Wait for your pipeline to run (it should take 1-2 minutes to execute).
 
 ## Step 1 · Open Resiliency Testing
 1. In the Harness module menu (left), select **Resiliency Testing**.
@@ -61,16 +63,20 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 Now map them:
 4. Double-click the **DA-K8s** agent.
 5. Open the **Application Maps** tab → **Create New Application Map**.
-6. Name it `workshop-am`, select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for web-`backend-<project_id>`and `frontend-<project_id>`.
+6. Name it `workshop-am`, select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for `web-backend-<project_id>`and `web-frontend-<project_id>`.
 
 > You now have an application map of your services.
 
 ## Step 3 · See auto-generated experiments
 *Goal: notice the platform proposes experiments for you.*
-1. Left menu → **Resilience Management** → open your `workshop-am` map.
+1. Left menu → **Insights** → **Application maps** → open your `workshop-am` map.
 2. Go to **Chaos Experiments** → choose **Only a few**.
 
+<img width="1022" height="425" alt="Screenshot 2026-08-10 at 17 10 07" src="https://github.com/user-attachments/assets/0d13999c-3ab7-4d03-815d-8bac6944f17d" />
+
 > Harness suggests a starter set of experiments. Have a look - you don't need to run these yet.
+
+<img width="1369" height="510" alt="Screenshot 2026-08-10 at 17 12 25" src="https://github.com/user-attachments/assets/b4620695-129d-476b-b2d6-1f10dc454e06" />
 
 ## Step 4 · Run a ready-made experiment (from a template)
 *Goal: experience the full loop once, before you build your own.*
