@@ -14,9 +14,9 @@ delivery pipeline.
 
 ## What is an experiment?
 An **experiment** is made of three things:
-- **Faults** — the attack (e.g. *delete a pod*).
-- **Probes** — the checks that decide pass/fail (e.g. *"is the app still returning HTTP 200?"*). **Probes produce your Resilience Score.**
-- **Actions** — helpers during the run (delay, notify, integrate). They do **not** affect the score.
+- **Faults**: the attack (e.g. *delete a pod*).
+- **Probes**: the checks that decide pass/fail (e.g. *"is the app still returning HTTP 200?"*). **Probes produce your Resilience Score.**
+- **Actions**: helpers during the run (delay, notify, integrate). They do **not** affect the score.
 
 Your **Resilience Score** is simply: of all the checks you defined, how many passed. 10 of 10 → 100%. 5 of 10 → ~50%.
 
@@ -36,43 +36,43 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 ## Step 1 · Open Resiliency Testing
 1. In the Harness module menu (left), select **Resiliency Testing**.
 
-✅ You should see the Resiliency Testing overview.
+> You should see the Resiliency Testing overview.
 
 ## Step 2 · Discover your services
 *Goal: let Harness find your app's services automatically instead of typing them in.*
 1. Left menu → **Project Settings** → **Discovery**.
 2. Find the **DA-K8s** discovery agent, expand its side menu, and click **Discover Now**.
-3. Wait for discovery to finish (about a minute — don't click it again).
+3. Wait for discovery to finish (about a minute - don't click it again).
 
 Now map them:
 4. Double-click the **DA-K8s** agent.
 5. Open the **Application Maps** tab → **Create New Application Map**.
 6. Name it `workshop-am`, select your app's services (use the search box), and click **Save**.
 
-✅ You now have an application map of your services.
+> You now have an application map of your services.
 
 ## Step 3 · See auto-generated experiments
 *Goal: notice the platform proposes experiments for you.*
 1. Left menu → **Resilience Management** → open your `workshop-am` map.
 2. Go to **Chaos Experiments** → choose **Only a few**.
 
-✅ Harness suggests a starter set of experiments. Have a look — you don't need to run these yet.
+> Harness suggests a starter set of experiments. Have a look - you don't need to run these yet.
 
 ## Step 4 · Run a ready-made experiment (from a template)
 *Goal: experience the full loop once, before you build your own.*
 1. Go to **Chaos Experiments** → click the dropdown next to **New Experiment** → **Create from Template**.
 2. Select the **Gateway Service Pod Restart** template.
-3. Choose **Import as copy** (so you can tweak it) — the alternative, *Import as reference*, is locked/read-only.
+3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
 4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
 5. Continue to the experiment and click **Run**.
 
-While it runs (and after), explore these — they're the whole point:
-- The **timeline / graph** — the fault and its probes.
-- The **logs** — you can see *exactly which pod was deleted and which new pod replaced it*, without ever touching `kubectl`.
-- The **probes** — a health check runs **before, during, and after** the fault. That's how you establish and re-confirm "steady state."
+While it runs (and after), explore these - they're the whole point:
+- The **timeline / graph**: the fault and its probes.
+- The **logs**: you can see *exactly which pod was deleted and which new pod replaced it*, without ever touching `kubectl`.
+- The **probes**: a health check runs **before, during, and after** the fault. That's how you establish and re-confirm "steady state."
 - Your **Resilience Score** and the **report**.
 
-✅ You've run your first experiment and read its result.
+> You've run your first experiment and read its result.
 
 ## Step 5 · Build your own experiment
 *Goal: create one from scratch. Peek back at Step 4 if you get stuck.*
@@ -91,11 +91,11 @@ While it runs (and after), explore these — they're the whole point:
 6. Add a second probe to check a metric stays within bounds:
    - **+ Add probe → Prometheus probe**
    - Endpoint: your Prometheus URL *(your facilitator will confirm this)*
-   - PromQL query + criteria: *(your facilitator will give you the exact query — e.g. "error rate stays below 5%")*
+   - PromQL query + criteria: *(your facilitator will give you the exact query - e.g. "error rate stays below 5%")*
 7. **Save**, then **Run**.
-8. While it runs, refresh your app tab (`http://<project_id>.cie-bootcamp.co.uk`) — watch it stay available as pods are killed and recreated.
+8. While it runs, refresh your app tab (`http://<project_id>.cie-bootcamp.co.uk`) - watch it stay available as pods are killed and recreated.
 
-✅ Compare your Resilience Score to Step 4's.
+> Compare your Resilience Score to Step 4's.
 
 ## Step 6 · Make chaos safe with Chaos Guard
 *Goal: guardrails so experiments can't cause a real outage.*
@@ -105,7 +105,7 @@ While it runs (and after), explore these — they're the whole point:
    - Add a **time window** that blocks runs during business-critical hours.
 3. Save, then try to run something the rule forbids.
 
-✅ The run is blocked **before it starts**. Chaos Guard sits on top of your normal access controls: access decides *who can act*; Chaos Guard decides *what and when — even for people who otherwise could*.
+> The run is blocked **before it starts**. Chaos Guard sits on top of your normal access controls: access decides *who can act*; Chaos Guard decides *what and when - even for people who otherwise could*.
 
 ## Step 7 · Gate a canary deployment on resilience
 *Goal: make resilience an automatic quality gate in your pipeline.*
@@ -117,42 +117,42 @@ While it runs (and after), explore these — they're the whole point:
 4. **Apply Changes → Save → Run** (Branch `main`).
 5. After it runs, review the result: if the resilience score is ≥ 50 the canary proceeds; if not, it holds / rolls back.
 
-✅ You've turned resilience into a deployment gate — chaos running **inside** your pipeline, not as a separate tool.
+> You've turned resilience into a deployment gate - chaos running **inside** your pipeline, not as a separate tool.
 
-🎉 **That's the core lab.** The optional steps below go deeper.
+**That's the core lab.** The optional steps below go deeper.
 
 ---
 
-# Part 2 — Optional
+# Part 2 - Optional
 
 ## Step 8 · Share your experiment as a template
 1. Open your `my-pod-delete` experiment → save it **as a template** at **org** level.
 2. Have a teammate (or switch to another project) → **Create from Template** → run it with their own values.
 
-✅ One definition, reused by many teams — only the inputs change.
+> One definition, reused by many teams - only the inputs change.
 
 ## Step 9 · Run a load test (Locust)
 1. Left menu → **Load Testing**.
 2. Open the sample **Locust** test and run it.
 
-✅ You've generated load. Real-world tip: run chaos *while* under load for a realistic test.
+> You've generated load. Real-world tip: run chaos *while* under load for a realistic test.
 
 ## Step 10 · Get notified & see trends
 1. Configure a **Slack** or **Microsoft Teams** notification for an experiment.
 2. Open the **Dashboard** to see pass/fail and your Resilience Score trend over time.
 
-✅ Now experiments can run unattended and report back to your team.
+> Now experiments can run unattended and report back to your team.
 
 ## Step 11 · Explore the fault library (Enterprise ChaosHub)
 1. Browse the **Enterprise ChaosHub**.
-2. See the built-in faults across Kubernetes, AWS, Azure, GCP, VMware, Linux, and Windows — plus the option to author your own custom faults.
+2. See the built-in faults across Kubernetes, AWS, Azure, GCP, VMware, Linux, and Windows - plus the option to author your own custom faults.
 
-✅ You've seen the breadth of what you can test.
+> You've seen the breadth of what you can test.
 
 ---
 
 ## Values your facilitator will confirm
-- `<project_id>` — your Harness project id (used in the app URL).
+- `<project_id>` - your Harness project id (used in the app URL).
 - Your app's namespace and backend deployment name.
 - The Prometheus endpoint and the exact PromQL query for Step 5.
 - Environment / infrastructure names, if different from `prod` / `k8s`.
