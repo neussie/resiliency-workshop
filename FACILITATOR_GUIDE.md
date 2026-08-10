@@ -104,19 +104,21 @@ Participants should NOT build these; they must exist so the workshop starts fast
 
 **Differentiator:** auto-discovery + application map (*table-stakes-plus* - win on auto-generating experiments from it in Module 2).
 
-## Module 2 - Auto-Generate Experiments from the map (10 min · observe)
+## Module 2 - Auto-Generate & Run an experiment (15 min · hands-on)
 
-**Objective:** show the platform proposes a starting battery of experiments so teams aren't staring at a blank page.
+**Objective:** the platform proposes a starting battery of experiments from the map, and participants run one and read the result in Run History - a fast first win on their own app.
 
-**Flow:** Resilience Management → drill into the Application Map → Chaos Experiments → **Only a few** → observe the auto-generated set.
+**Flow:** Insights → Application maps → open the map → Chaos Experiments → **Only a few** (Harness generates a Pod Delete per service, each with a built-in probe) → open the **web-backend** experiment → **Run** → **Run History** tab → open the run to see the **timeline** (fault + probe) and the **Resilience Score**.
 
-**Exact steps:** `TODO` (present in [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps)).
+**Exact steps:** `TODO` (auto-generate + run + Run History is new - write fresh; the "Only a few" chooser and map nav are captured in README Step 3).
 
-**Talk track:** "the map isn't just a picture - it seeds experiments." Keep it light; this is a bridge into Module 3.
+**Talk track:** "the map isn't just a picture - it seeds *and scores* experiments." The built-in probe is **pod-level** (did the pod recover) - a real score, but the *app-level* HTTP probe ("is the app returning 200?") comes when they build their own in Module 4. Keep this the friendly first run; save the deep observability walkthrough for Module 3. `⟨verify⟩` what probe the Module 3 template ships with.
+
+**Differentiator:** one click turns a discovered app into a proposed, **scored** experiment - no blank page, no hand-entered targets.
 
 ## Module 3 - Reuse a Pre-Built Experiment Template & read the run (25 min · hands-on)
 
-**Objective:** the anchor module. Experience the whole loop end-to-end *before* building anything, so the concepts have a reference.
+**Objective:** the anchor module. Now the standardized, reusable way - import a shared template and slow down on the observability walkthrough (logs, probe pattern, score). Module 2 was the quick first run; this is the deep dive.
 
 **Flow:**
 1. New Experiment → **Create From Template** (dropdown) → pick **"Gateway Service Pod Restart"**.
@@ -281,7 +283,7 @@ Verify these live in the workshop tenant, then fill in the `TODO` / `⟨verify�
 
 | Path | Modules | Approx |
 | --- | --- | --- |
-| **Core** | 0 Framing, 1 Discovery, 2 Auto-gen, 3 Reuse template, 4 Build own, 5 Chaos Guard, 6 CD canary | ~2h + Q&A |
+| **Core** | 0 Framing, 1 Discovery, 2 Auto-gen + run, 3 Reuse template, 4 Build own, 5 Chaos Guard, 6 CD canary | ~2h + Q&A |
 | **Extension** | 7 Templatize, 8 Load test, 9 Notifications/dashboards, 10 ChaosHub tour | +~45m |
 
 Trim order if running long: 2 → 9 → 8 → 10. Never cut 3, 4, 5, or 6 (they carry the differentiators).

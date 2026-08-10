@@ -67,19 +67,30 @@ Now map them:
 
 > You now have an application map of your services.
 
-## Step 3 · See auto-generated experiments
-*Goal: notice the platform proposes experiments for you.*
+## Step 3 · Run an auto-generated experiment
+*Goal: let the platform propose an experiment for you, run it, and read the result in Run History.*
 1. Left menu → **Insights** → **Application maps** → open your `workshop-am` map.
 2. Go to **Chaos Experiments** → choose **Only a few**.
 
 <img width="1022" height="425" alt="Screenshot 2026-08-10 at 17 10 07" src="https://github.com/user-attachments/assets/0d13999c-3ab7-4d03-815d-8bac6944f17d" />
 
-> Harness suggests a starter set of experiments. Have a look - you don't need to run these yet.
+> Harness generates a starter set for you - a **Pod Delete** on your `frontend` and on your `backend`, each with a built-in health probe. No need to build anything.
 
 <img width="1369" height="510" alt="Screenshot 2026-08-10 at 17 12 25" src="https://github.com/user-attachments/assets/b4620695-129d-476b-b2d6-1f10dc454e06" />
 
+3. Open the **web-backend** experiment and click **Run** (top right).
+4. Open the **Run History** tab. Watch the run execute; when it finishes you'll see **Completed** and your **Resilience Score**.
+
+<!-- INSERT: Run History screenshot (Resilience Score Trends + Experiment Runs, 100/100) -->
+
+5. Click the run to open its **timeline**: the **fault** (the exact pod that was deleted) and the **probe** (the health check that stayed green through the deletion) - all without touching `kubectl`.
+
+<!-- INSERT: run timeline screenshot (FAULT pod-delete + PROBE default-pod-level-probe) -->
+
+> You've run your first experiment and read its Resilience Score in Run History.
+
 ## Step 4 · Run a ready-made experiment (from a template)
-*Goal: experience the full loop once, before you build your own.*
+*Goal: now do it the reusable way - run a standardized, ready-made experiment from a template.*
 1. Go to **Chaos Experiments** → click the dropdown next to **New Experiment** → **Create from Template**.
 2. Select the **Gateway Service Pod Restart** template.
 3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
@@ -92,7 +103,7 @@ While it runs (and after), explore these - they're the whole point:
 - The **probes**: a health check runs **before, during, and after** the fault. That's how you establish and re-confirm "steady state."
 - Your **Resilience Score** and the **report**.
 
-> You've run your first experiment and read its result.
+> Same loop as Step 3, but from a shared template - one definition many teams can reuse.
 
 ## Step 5 · Build your own experiment
 *Goal: create one from scratch. Peek back at Step 4 if you get stuck.*
