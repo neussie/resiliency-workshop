@@ -33,6 +33,16 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 
 # Part 1 - Core lab
 
+## Step 0 · Deploy your application
+*Prerequisite: If you haven't been through the DevOps lab in this session.*
+1. Open Continuous Delivery & GitOps.
+
+<img width="686" height="276" alt="Screenshot 2026-08-10 at 16 39 45" src="https://github.com/user-attachments/assets/c41c7616-cda0-4d18-8697-23b3af8e49d4" />
+
+2. Run the workshop1 pipeline we have created for you. It will deploy the application we are going to run our tests on.
+
+<img width="1329" height="273" alt="Screenshot 2026-08-10 at 16 40 04" src="https://github.com/user-attachments/assets/50f34f9f-c2cd-4135-aeca-66220444a52c" />
+
 ## Step 1 · Open Resiliency Testing
 1. In the Harness module menu (left), select **Resiliency Testing**.
 
@@ -46,10 +56,12 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 2. Find the **DA-K8s** discovery agent, expand its side menu, and click **Discover Now**.
 3. Wait for discovery to finish (about a minute - don't click it again).
 
+<img width="1276" height="320" alt="Screenshot 2026-08-10 at 15 34 44" src="https://github.com/user-attachments/assets/5a76f68b-eb55-4897-9797-c54374aa6db7" />
+
 Now map them:
 4. Double-click the **DA-K8s** agent.
 5. Open the **Application Maps** tab → **Create New Application Map**.
-6. Name it `workshop-am`, select your app's services (use the search box), and click **Save**.
+6. Name it `workshop-am`, select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for web-`backend-<project_id>`and `frontend-<project_id>`.
 
 > You now have an application map of your services.
 
