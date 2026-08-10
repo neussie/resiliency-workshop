@@ -1,254 +1,403 @@
-# Lab  - Chaos Engineering
+# Facilitator Guide — Resiliency Testing Lab (Harness)
 
+> **This is the SE / facilitator guide** — the "why", the talk-track, the positioning, and the setup.
+> **Participants follow [`README.md`](README.md)** — the clean, step-by-step lab. A first draft of those
+> steps already exists there; the `TODO` / `⟨verify⟩` markers in this guide track what still needs
+> confirming live in the workshop tenant (see [Second-pass checklist](#second-pass-checklist)).
+>
+> **Two files, two audiences:**
+>
+> | File | Audience | Contents |
+> | --- | --- | --- |
+> | `FACILITATOR_GUIDE.md` (this file) | You / the SE | Objectives, talk-track, positioning, facilitation notes, setup, sources |
+> | [`README.md`](README.md) | Workshop participants | The hands-on steps they follow |
+>
+> The Modules here map to the participant Steps in [`README.md`](README.md), offset by one (the participant guide adds an opening "Step 1 · Open Resiliency Testing"): Module 1 ↔ Step 2, Module 3 ↔ Step 4, … Module 10 ↔ Step 11. See [Appendix A](#appendix-a--timing-summary).
 
-### Summary: Fully integrated chaos experiments with the delivery process
+## About this lab
 
-**Learning Objective(s):**
+A hands-on workshop that walks a customer through **Harness Resiliency Testing** on Kubernetes:
+auto-discover their services, run and build chaos experiments, quantify resilience with a score,
+govern it safely, and gate a canary deployment on it — the full product, not just chaos.
 
-- Auto generate chaos experiments on deployed services
-- Build a chaos experiments using a base fault (out of 200 OOTB faults)
-- Embed chaos engineering experiments into the deployment process
-- Add continuous verification to the deployed service
-- Automate release validation
+- **Audience:** platform / SRE / DevOps engineers. Assumes CI/CD familiarity, **new to chaos engineering.**
+- **Environment:** Kubernetes, **Prometheus** for metrics, reusing the DevSecOps lab infra (simple app, few services). A "fake it" workshop, not a full POV.
+- **Format:** mostly hands-on, participants working in their own project; a few demo-only modules.
+- **Duration:** two tiers — a **~2h core path** plus **optional extension modules**. Any SE can flex to the audience and clock.
 
-**Steps**
+> **Naming note:** Harness's official spelling is "Resili**ence** Testing"; internally we say "Resiliency Testing." The module now spans **Chaos Testing + Load Testing + DR Testing**. We cover Chaos Testing (core) + Load Testing (demo) and skip DR (demo only if asked).
 
-1. From the module selection menu select **resilience testing**
+## Learning objectives
 
-<img width="733" height="402" alt="Screenshot 2026-03-06 at 08 14 35" src="https://github.com/user-attachments/assets/3d6bba05-4189-4c14-893b-cb75e270029d" />
+By the end, participants can:
+1. Auto-discover Kubernetes services and build an Application Map.
+2. Explain the model: **Fault + Probe + Action = Experiment**, and what drives the Resilience Score.
+3. Reuse a standardized **Experiment Template** and read a run (timeline, logs, probes, score, report).
+4. Build their own experiment with an HTTP + **Prometheus (PromQL)** steady-state probe.
+5. Govern experiments with **Chaos Guard** (deny fault types, block business-critical windows).
+6. **Gate a canary deployment** on resilience using a Chaos step + Continuous Verification.
+7. Articulate why Harness beats point tools (governance, single-platform, chaos-under-load).
 
+## The one mental model (plant this in Module 0, reinforce throughout)
 
-4. From the left hand menu, go to **Project Settings**
-5. From the available tiles select “Discovery”
-6. After expanding the side menu of the “DA-K8s” agent click on “Discover Now”
+| Building block | What it is | Effect on Resilience Score |
+| --- | --- | --- |
+| **Fault** | The attack — pod delete, CPU/memory hog, network latency/loss, DNS… | none directly |
+| **Probe** | The check / hypothesis — is steady state holding? (HTTP, Prometheus, k8s, SLO…) | **drives the score** |
+| **Action** | Utilities during the run — delay, custom script, container, notify | **never** affects the score |
+| **Experiment** | An organized test = one or more Faults + Probes (+ Actions) against a target | produces the score |
 
-  ![image](https://github.com/user-attachments/assets/be1a029d-9b4e-4971-9519-f284ba75c815)
+**Resilience Score** (say this out loud): per fault, `Fault Weight × Probe Success %`; the experiment
+score is the weighted average across faults. 10/10 probes pass → 100%; 5/10 → ~50%. Probes are the whole game.
 
+## Narrative arc
 
+> Why break things on purpose → the scientific loop (steady state → hypothesis → fault → observe → learn → expand) →
+> a safe first fault → probes & Resilience Score → Prometheus steady-state → govern it safely →
+> gate it in the pipeline → scale it with templates → operationalize it.
 
-**Create Application Map**
+---
 
-1. After discovery is complete double click on the agent “DA-K8s”
+## Prerequisites (pre-provisioned before the session)
 
-   ![image](https://github.com/user-attachments/assets/3094b76d-1d27-429d-ab67-0fdb8e978894)
+Participants should NOT build these; they must exist so the workshop starts fast.
 
+- [ ] Kubernetes cluster + the DevSecOps sample app deployed (gateway/backend services). `⟨verify⟩`
+- [ ] Harness project per participant (or shared org with per-participant projects). `⟨verify⟩`
+- [ ] Discovery Agent installable / chaos infrastructure connected. `⟨verify⟩`
+- [ ] **Prometheus** running and reachable from the execution plane, app metrics exposed. `⟨verify⟩`
+- [ ] A **pre-built Experiment Template**: "Gateway Service Pod Restart" with a health-check probe pattern
+      (steady-state probe at start → during → end). Fault = **Pod Delete/Restart** (impact is visible in logs; CPU/stress is not). `⟨build⟩`
+- [ ] An existing **CD pipeline** deploying the app with a **canary** stage (for Module 7). `⟨verify⟩`
+- [ ] A **sample Locust** load test in the environment (for the demo). `⟨build⟩`
+- [ ] Notification channel (Slack or MS Teams) wired to a user group (for the extension module). `⟨verify⟩`
 
-1. Select the "Application Maps" tab
-2. Click on **Create New Application Map** and enter the following values
+---
 
-| Input                        | Value|  
-| ---------------------------- | ------ |
-| Name                         |workshop-am|
+# CORE PATH (~2 hours)
 
-4. Select the relevant services for your project name "use the search function to find the services"
-5. Click Save
+## Module 0 — Framing: why break things on purpose (10 min · present)
 
+**Objective:** give the audience the "why" and the vocabulary before they touch anything.
 
-**Auto Generate Chaos Experiments**
-1. From left handside menu select **Resilience Management**
-2. Drill down to the previously created application map
-3. Navigate to **Chaos Experiments**
-4. Select **Only a few**
+**Talk track:**
+- Definition: chaos engineering = *building confidence that the system withstands turbulent conditions*.
+- The scientific loop: **steady state → hypothesis → inject fault → observe → abort if needed → learn → expand blast radius.**
+- Pre-empt the two objections: *"we're afraid of prod"* (answer: blast-radius limits + automated abort make it safe; start in staging) and *"we're not Netflix"* (answer: it scales down — one hypothesis, one fault).
+- Plant the [mental model](#the-one-mental-model-plant-this-in-module-0-reinforce-throughout) and the Resilience Score.
+- Position Harness: this lives in the **same platform as your CD** — chaos is a step in your pipeline, not a bolt-on tool.
 
-Observe the auto generated experiments and run the **web-backend experiment**
+**Suggested opening (≈2 min, in your own words):**
+> "Every system fails eventually — the only question is whether you find out in a controlled experiment, or at 3am from an angry customer. Resiliency testing is the discipline of *deliberately* injecting failure to build confidence that the system survives it. We treat it like a science experiment: define what 'healthy' looks like — the **steady state** — make a **hypothesis** ('if I kill a pod, the app stays up'), inject the **fault**, and watch whether the hypothesis holds. If it goes wrong, it stops automatically. Today you'll do exactly that on a live app, put guardrails around it, and then wire it into a deployment so a release can't ship unless it survives. And you don't need to be Netflix to start — one hypothesis and one fault is enough."
 
+**Differentiator seeded:** single unified platform.
 
+## Module 1 — Auto-Discovery & Application Map (15 min · hands-on)
 
+**Objective:** populate the participant's world automatically instead of hand-defining targets.
 
----------------
+**Flow:** Project Settings → Discovery → run the Discovery Agent → **Discover Now** → create an Application Map from the discovered services.
 
-**Create Experiments manually**
+**Exact steps:** `TODO` (see [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps) — discovery + app-map steps already exist there).
 
-This time we will create a network corruption experiment
+**Talk track:** the agent list/watches services and maps real traffic; the map updates after every run. Compare to competitors where you hand-enter resource IDs.
 
-1. From the left hand menu, go to **Chaos Testing**
-2. Select **+New Experiment**
+**Differentiator:** auto-discovery + application map (*table-stakes-plus* — win on auto-generating experiments from it in Module 2).
 
-| Input                        | Value|  
-| ---------------------------- | ------ |
-| Name                         |network-corruption|
+## Module 2 — Auto-Generate Experiments from the map (10 min · observe)
 
-3. Select **Harness Infra**
+**Objective:** show the platform proposes a starting battery of experiments so teams aren't staring at a blank page.
 
-  ![Screenshot 2024-11-28 at 14 24 21](https://github.com/user-attachments/assets/c47834a3-fe88-44ed-be7e-7cee97bcb303)
+**Flow:** Resilience Management → drill into the Application Map → Chaos Experiments → **Only a few** → observe the auto-generated set.
 
-  - Click on **"Select a chaos Infrastructure"**
+**Exact steps:** `TODO` (present in [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps)).
 
- 
-4. On the popup window select the available options
+**Talk track:** "the map isn't just a picture — it seeds experiments." Keep it light; this is a bridge into Module 3.
 
-| Input                        | Value|  
-| ---------------------------- | ------ |
-| Select Environment|prod|
-| Select Infrastructure|k8s|
+## Module 3 — Reuse a Pre-Built Experiment Template & read the run (25 min · hands-on)
 
-5. Click on next to navigate to the experiment builder
-6. Click on **Add Fault**
-7. From the list of available faults select **Pod Network Corruption**
-8. From the navigation bar select **Target Application**
+**Objective:** the anchor module. Experience the whole loop end-to-end *before* building anything, so the concepts have a reference.
 
-| Input                        | Value | Notes |
-| ---------------------------- | ------ | -------|
-| Target Workload Kind|deployment||
-| Target Workload Namespace ||**Select the namespace available from the dropdown**|
-| Target Workload Names | Pick the backend deployment name|We will change that later |
-|Target Workload Labels | leave empty||
+**Flow:**
+1. New Experiment → **Create From Template** (dropdown) → pick **"Gateway Service Pod Restart"**.
+2. Import **as copy** (so they can tinker) vs **as reference** (locked) — explain both.
+3. Select **Environment / Infrastructure** (`prod` / `k8s` `⟨verify⟩`).
+4. **Run it.**
+5. **Walk the run — this is the money shot:**
+   - Timeline / graph view of fault + probes.
+   - Logs: *which pod was targeted, which new pod came up* — all without touching `kubectl`.
+   - Probes evaluated (health check at start / during / end = steady-state pattern).
+   - **Resilience Score** + report.
 
+**Exact steps:** `TODO` (template create-from + run; observability walkthrough is new — write fresh).
 
-9. From the navigation bar select **Tune Fault**
+**Talk track:** why **Pod Restart** first — the impact is legible in logs (Sagar's tip). Point out the start/during/end health-probe pattern as the *recommended* way to establish and re-verify steady state. Observability + score is what customers actually care about.
 
-| Input       | Value |
-| ----------- | ----- |
-| Total Chaos Duration |150|
-| Network Packet Corruption Percentage |100|
-10. Click on **Apply Changes** and then **Save**
-11. Run the experiment and observe the logs. 
-12. While the experiment is running navigate to the application's endpoint (see image below)
-13. Observe the network errors
+**Differentiators:** experiment templates; observability; Resilience Score.
 
-| project                | domain        | suffix |
-| ---------------------- | ------------- | ------ |
-| http\://\<project\_id>|.cie-bootcamp|.co.uk|
+## Module 4 — Build Your Own Experiment (25 min · hands-on)
 
-<img width="1415" height="205" alt="image" src="https://github.com/user-attachments/assets/cb85c608-bfbb-4ec5-b179-c6ebd6ff394c" />
+**Objective:** "I did it myself." Recreate a similar experiment from scratch, referring to the template.
 
+**Flow:**
+1. New Experiment → **Blank Canvas** → Add Fault → **Pod Delete**.
+2. Target a **discovered** workload (from Module 1) — kind/namespace/name.
+3. Add probes:
+   - **HTTP probe** on the app health endpoint (criteria `== 200`).
+   - **Prometheus probe** — a **PromQL** steady-state check (e.g. error rate below threshold / p95 latency). This is the Prometheus story on the whiteboard.
+4. Run. **While it runs, open the app endpoint** so they *see* the app stay alive / degrade in real time.
+5. Compare Resilience Score to Module 3.
 
-**Validate the health automatically**
+**Exact steps:** `TODO` — HTTP probe config + endpoint format exist in [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps); **Prometheus probe (PromQL + endpoint) is new — write fresh and `⟨verify⟩` the PromQL against the lab's metrics.**
 
-1. From the left hand menu, go to **Project Settings**
-2. Select **Chaos Probles**
-3. Create a new probe by clicking **+ New Probe**
-4. Select the HTTP probe
-   
-| Field                | Value        | Notes |
-| ---------------------- | ------------- | ------ |
-| http\://\<project\_id>.cie-bootcamp.co.uk |||
-| Criteria | == | | 
-| Response Code | 200 | | 
+**Talk track:** the probe is the hypothesis. Tie the PromQL back to an SLO. Reinforce: probes drive the score, faults don't.
 
-5. Move to the next tab **Configure Properties**
+**Differentiator:** Prometheus steady-state probes; score tied to real hypotheses.
 
+## Module 5 — Chaos Guard: govern it safely (15 min · hands-on)
 
-| Field                | Value        | Notes |
-| ---------------------- | ------------- | ------ |
-| Timeout | 20s ||
-| Interval | 2s | | 
-| Attempt | 5 | | 
-| Initial Delay | 5s ||
+**Objective:** answer "how do we allow this without causing a real outage?"
 
-Now that we have our probe navigate to **Chaos Testing**
-Drill down to the **network-latency** experiment
+**Flow:**
+1. Create a Chaos Guard rule (project admin): **deny node-level faults**.
+2. Add a **time-window** condition: block a business-critical window.
+3. Attempt a run that violates the rule → show it's **blocked before execution**.
 
-Hovering over the network fault we can add our newly created probe 
-Select **+ Add a parallel node -> Add a probe**
+**Exact steps:** `TODO` (new — `⟨verify⟩` Chaos Guard nav and who can configure it).
 
-<img width="519" height="354" alt="image" src="https://github.com/user-attachments/assets/519fc841-bbf1-4480-a01c-4583eab0b208" />
+**Talk track:** Chaos Guard is **runtime governance on top of RBAC** — RBAC says *who can*, Chaos Guard says *what/when even they can't*. Give devs freedom to test, but ring-fence destructive faults and critical hours (cron them out-of-hours instead). Only project admins set rules.
 
-Save and rerun the experiment 
-Observe the **logs** of the probe **Resilience Score** generated in comparisson to the previous execution
+**Differentiator:** ⭐ **Chaos Guard — the strongest enterprise wedge; competitors rely on plain RBAC/IAM.** Lead with this for a regulated customer like Barclays.
 
+## Module 6 — Embed in CD: Canary + Chaos + Continuous Verification (25 min · hands-on)
 
+**Objective:** the headline for a CD customer — resilience as an automated deployment gate.
 
----------------
+**Flow:**
+1. Open the existing CD pipeline → Deploy stage → canary phase.
+2. **After** canary deploy, **before** approval, add a **Verify (Continuous Verification)** step (Canary type). `⟨verify⟩`
+3. In parallel, add a **Chaos** step → select an experiment from Module 3/4 → set **Expected Resilience Score** (e.g. 50). Use runtime inputs/expressions where useful.
+4. Run the pipeline; after it completes, review how the gate behaved (pass → roll forward; fail → hold/rollback).
 
-**Create Experiments manually**
+**Exact steps:** `TODO` — Verify + Chaos step config already exist in [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps); adapt to Pod Delete experiment and canary gating.
 
-1. From the left hand menu, go to **Chaos Testing**
-2. Select **+New Experiment**
+**Talk track:** "a resilience stage/step can sit anywhere between deploy and the next stage." This is chaos **inside** the pipeline with CV — not a separate tool you glue in.
 
-| Input                        | Value|  
-| ---------------------------- | ------ |
-| Name                         |pod-memory|
+**Differentiator:** ⭐ **Chaos + CD + CV + canary gating in one platform — the biggest gap vs Gremlin/AWS FIS (both bolt-ons).**
 
-3. Select **Harness Infra**
+> End of core path (~2h with light Q&A). Modules below are optional extensions.
 
-  ![Screenshot 2024-11-28 at 14 24 21](https://github.com/user-attachments/assets/c47834a3-fe88-44ed-be7e-7cee97bcb303)
+---
 
-  - Click on **"Select a chaos Infrastructure"**
+# EXTENSION MODULES (optional — add by time & interest)
 
- 
-4. On the popup window select the available options
+## Module 7 — Templatize & Standardize (15 min · hands-on)
 
-| Input                        | Value|  
-| ---------------------------- | ------ |
-| Select Environment|prod|
-| Select Infrastructure|k8s|
+**Objective:** close the scalability loop Sagar stressed — one team defines, everyone reuses.
 
-5. Click on next to navigate to the experiment builder
-6. Click on **Add Fault**
-7. From the list of available faults select **Pod Memory Hog**
-8. From the navigation bar select **Target Application**
+**Flow:** save the Module 4 experiment as an **Experiment Template at org level** → have another participant/project **reuse** it (import as reference vs copy) with only their own input values.
 
-| Input                        | Value | Notes |
-| ---------------------------- | ------ | -------|
-| Target Workload Kind|deployment||
-| Target Workload Namespace ||**Select the namespace available from the dropdown**|
-| Target Workload Names | Pick the backend deployment name|We will change that later |
-|Target Workload Labels | leave empty||
+**Exact steps:** `TODO` (`⟨verify⟩` whether templates live under ChaosHub or Settings → Templates in the tenant — see [checklist](#second-pass-checklist)).
 
+**Talk track:** same template, 20 teams, zero rework — governance + standardization is the enterprise value, not templates alone.
 
-9. From the navigation bar select **Tune Fault**
+**Differentiator:** org-wide standardization (templates alone are table-stakes; standardization + governance is the story).
 
-| Input       | Value |
-| ----------- | ----- |
-| Total Chaos Duration |600|
-| Memory Consumption |300|
-| Number of workers |1|
-| Pod affected percentage|100|
+## Module 8 — Load Testing (10 min · demo)
 
-10. Click on **Apply Changes** and then **Save**
+**Objective:** introduce chaos-under-load without configuration overhead.
 
+**Flow:** run/show a **sample Locust** load test; explain injecting faults *while* under load = authentic steady state.
 
-**Change target service to canary using YAML**
+**Talk track:** Locust is GA; JMeter/K6 may be coming-soon/feature-flagged — `⟨verify⟩` before quoting. Demo only.
 
-1. From the pipeline visual editor switch to yaml
-2. Click the edit button to go into edit mode
-3. Locate the service name (set on previous state) **TARGET_WORKLOAD_NAMES**
-4. Replace it with **backend-<project_name>-deployment-canary** where project_name is the harness project. Summary: add the suffic **-canary** to the target workload
-5. Save the experiment
+**Differentiator:** integrated load testing (chaos + load in one tool).
 
+## Module 9 — Notifications, Dashboards & Reporting (10 min · demo/hands-on)
 
-**Embed chaos experiments into CD pipelines**
+**Objective:** show how this runs unattended and trends over time.
 
-1. From the module selection menu select Continuous Delivery & GitOps
+**Flow:** configure a **Slack / MS Teams** notification for an experiment; open the dashboard (top experiments, pass/fail, **Resilience-Score trend**).
 
+**Differentiator:** operationalizing / automation.
 
-   ![Screenshot 2024-11-28 at 14 07 22](https://github.com/user-attachments/assets/898ee27b-7369-47c6-a145-e74b49bb4bed)
+## Module 10 — Enterprise ChaosHub Tour + Custom Faults (10 min · present)
 
-   
-2. From the left hand side menu select pipelines and drill down to the existing pipeline
+**Objective:** convey breadth and extensibility.
 
-3. In the existing pipeline, within the Deploy backend stage **after** Canary Deployment and **before** the approval step click on the plus icon to add a new step
+**Flow:** tour the read-only **Enterprise ChaosHub** — OOTB faults across Kubernetes / AWS / Azure / GCP / VMware / Linux / Windows; show that teams can author **custom faults** reusable org-wide.
 
-4. Add a **Verify** step with the following configuration
+**Talk track:** quote the OOTB fault count the tenant actually shows (`⟨verify⟩` — marketing figures vary). "You already trust the open-source engine — Harness is the same **CNCF LitmusChaos** lineage, hardened and governed."
 
-| Input                        | Value  | Notes                                                                                            |
-| ---------------------------- | ------ | ------------------------------------------------------------------------------------------------ |
-| Name                         |Verify|                                                                                                  |
-| Continuous Verification Type |Canary|                                                                                                  |
-| Sensitivity                  |Low| This is to define how sensitive the ML algorithms are going to be on deviation from the baseline |
-| Duration                     |10mins|                                                                                                  |
+**Differentiator:** breadth + custom fault authoring + CNCF-maintainer credibility.
 
-5. Under the verify step click on the plus icon to add a new step in parallel
+## (Not included) Disaster Recovery Testing
 
+Skipped — workflow/pipeline-based and too complex for a workshop. Demo only if a customer asks.
 
-   ![Screenshot 2024-11-28 at 14 28 38](https://github.com/user-attachments/assets/368ba808-d303-43f8-8824-5d2e09367b01)
+---
 
-   
-6. Add a **chaos** step with the following configuration
+## Competitive positioning cheat-sheet (for the SE, not the slides)
 
-| Input                        | Value  |
-| ---------------------------- | ------ |
-| Name                         |Chaos|
-| Select Chaos Experiment |pod-memory|
-|  Expected Resilience Score|50| 
+**Lead with these (genuinely differentiated):**
+- **Chaos Guard** — runtime governance beyond RBAC.
+- **Single-platform CD + CV + canary gating** — others integrate as a bolt-on.
+- **Chaos-under-load** — faults while load-testing, same tool.
+- **CNCF LitmusChaos maintainer** — "we build the standard."
 
-7. Click on Apply Changes
+**Concede honestly, then pivot:** AWS FIS has deep native AWS control-plane faults; Gremlin has the most polished UX. Neither has governance + pipeline-native gating + chaos-under-load in one platform.
 
-8. Click **Save** and then click **Run** to execute the pipeline with the following inputs.
+**Don't over-claim (table-stakes):** experiment templates, auto-discovery, and resilience scoring all have competitor equivalents (Steadybit, Gremlin). Win on governance + standardization + pipeline-native.
 
-| Input       | Value | Notes       |
-| ----------- | ----- | ----------- |
-| Branch Name |main| Leave as is |
+| Capability | Harness | Gremlin | AWS FIS | Azure Chaos | Chaos Mesh | Steadybit |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| Runtime governance (Chaos Guard) | ⭐ | ~ | IAM only | ~ | ✗ | ~ |
+| Native CD + CV + canary gating | ⭐ | bolt-on | bolt-on | ✗ | ✗ | bolt-on |
+| Integrated load testing | ⭐ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Multi-cloud + K8s + Linux/Windows | ✔ | ✔ | AWS only | Azure only | K8s only | ✔ |
+| Resilience Score | ✔ | ~ | ✗ | ✗ | ✗ | ✔ |
+| Auto-discovery / app maps | ✔ | ~ | ✗ | ✗ | ✗ | ✔ |
+| CNCF OSS lineage + enterprise support | ⭐ | ✗ | ✗ | ✗ | community | ✗ |
 
-9. After 10 minutes review what happened with the execution 
+---
+
+## Second-pass checklist
+
+Verify these live in the workshop tenant, then fill in the `TODO` / `⟨verify⟩` steps:
+
+- [ ] **Templates location:** ChaosHub vs Settings → Templates + Resilience Probes (docs say custom/Git ChaosHubs were removed; Sagar demoed a ChaosHub). Affects Modules 3 & 7.
+- [ ] **Load Testing frameworks:** Locust GA; confirm JMeter/K6 availability / feature flags. Module 8.
+- [ ] **OOTB fault count** to quote. Module 10.
+- [ ] **Prometheus probe** PromQL + endpoint against the lab's actual metrics. Module 4.
+- [ ] **Chaos Guard** nav + who can configure. Module 5.
+- [ ] **Canary + Verify + Chaos step** nav in the current pipeline UI. Module 6.
+- [ ] Confirm env/infra names (`prod` / `k8s`) and the app endpoint format.
+
+---
+
+## Appendix A — Timing summary
+
+| Path | Modules | Approx |
+| --- | --- | --- |
+| **Core** | 0 Framing, 1 Discovery, 2 Auto-gen, 3 Reuse template, 4 Build own, 5 Chaos Guard, 6 CD canary | ~2h + Q&A |
+| **Extension** | 7 Templatize, 8 Load test, 9 Notifications/dashboards, 10 ChaosHub tour | +~45m |
+
+Trim order if running long: 2 → 9 → 8 → 10. Never cut 3, 4, 5, or 6 (they carry the differentiators).
+
+---
+
+## Appendix B — Previous lab (reference for exact steps)
+
+> Kept from the old Chaos Engineering lab as source material for writing the `TODO` steps above.
+> Remove before shipping the final version.
+
+### Discovery & Application Map (old)
+1. Module menu → **Resilience Testing**.
+2. Project Settings → **Discovery** → expand the `DA-K8s` agent → **Discover Now**.
+3. After discovery, double-click the `DA-K8s` agent → **Application Maps** tab → **Create New Application Map** (Name: `workshop-am`) → select the relevant services (use search) → **Save**.
+
+### Auto-generate experiments (old)
+1. **Resilience Management** → drill into the application map → **Chaos Experiments** → **Only a few** → observe and run the `web-backend` experiment.
+
+### Manual experiment — network corruption (old)
+1. **Chaos Testing → + New Experiment**, Name `network-corruption`.
+2. **Harness Infra** → Select a chaos Infrastructure → Environment `prod`, Infrastructure `k8s` → Next.
+3. **Add Fault → Pod Network Corruption**. Target Application: Workload Kind `deployment`, Namespace (from dropdown), Names (backend deployment), Labels empty.
+4. **Tune Fault:** Total Chaos Duration `150`, Network Packet Corruption Percentage `100` → Apply Changes → Save → Run.
+5. While running, hit the app endpoint and observe network errors. Endpoint format: `http://<project_id>.cie-bootcamp.co.uk`.
+
+### HTTP probe (old)
+1. Project Settings → **Chaos Probes → + New Probe → HTTP**.
+   - URL `http://<project_id>.cie-bootcamp.co.uk`, Criteria `==`, Response Code `200`.
+2. Configure Properties: Timeout `20s`, Interval `2s`, Attempt `5`, Initial Delay `5s`.
+3. Chaos Testing → open the experiment → hover the fault → **+ Add a parallel node → Add a probe** → Save & rerun → compare logs / Resilience Score.
+
+### Pod memory experiment + canary via YAML (old)
+1. **+ New Experiment**, Name `pod-memory`; Harness Infra → Env `prod`, Infra `k8s`.
+2. **Add Fault → Pod Memory Hog**; target the backend deployment.
+3. **Tune Fault:** Total Chaos Duration `600`, Memory Consumption `300`, Workers `1`, Pod affected `100` → Apply → Save.
+4. Switch to YAML → edit → find `TARGET_WORKLOAD_NAMES` → append `-canary` (i.e. `backend-<project_name>-deployment-canary`) → Save.
+
+### Embed chaos in CD pipeline (old)
+1. Module menu → **Continuous Delivery & GitOps** → Pipelines → open the pipeline.
+2. In **Deploy backend**, after Canary Deployment and before approval, **+ add step → Verify**:
+   - Name `Verify`, CV Type `Canary`, Sensitivity `Low`, Duration `10 mins`.
+3. Under Verify, **+ add a step in parallel → Chaos**:
+   - Name `Chaos`, Select Chaos Experiment `pod-memory`, Expected Resilience Score `50`.
+4. Apply Changes → Save → Run (Branch `main`) → review after ~10 min.
+
+---
+
+## Appendix C — Objection handling & Q&A bank
+
+**Objections you'll likely hear (with crisp answers):**
+
+- **"We can't run this in production."** Start in staging/pre-prod — production is the *goal*, not the start. Blast radius is scoped (pod %, single service), Chaos Guard blocks dangerous faults and critical windows, and probes auto-abort the run if steady state breaks. You expand only after green.
+- **"We're not Netflix / too small for chaos."** It scales down. One hypothesis + one pod-delete in staging *is* chaos engineering. You don't need Chaos Monkey to get value.
+- **"We don't even know our steady state."** That's the first win, not a blocker — chaos forces you to define your SLIs/SLOs. The Prometheus probe in Module 4 makes it explicit.
+- **"Won't this just cause outages?"** The whole point is *controlled, observed, abortable* failure: blast-radius limits + probes + Chaos Guard. Contrast with the uncontrolled outage you're trying to prevent.
+- **"How is this different from load testing?"** Load = behaviour under *traffic*; chaos = behaviour under *failure*. Best combined — inject faults *while* under load (Module 8).
+- **"We already have RBAC — why Chaos Guard?"** RBAC = *who* can act. Chaos Guard = *what* and *when* they can, evaluated at runtime. Different axis; they layer.
+
+**Product questions you should be ready for:**
+
+- *What faults are supported?* 200+ OOTB (confirm tenant count) across Kubernetes, AWS, Azure, GCP, VMware, Linux, Windows — plus custom fault authoring.
+- *Does it work outside Kubernetes?* Yes — Linux/Windows native agents and cloud faults. (Chaos Mesh, a common OSS comparison, is K8s-only.)
+- *Which metric providers can probes use?* Prometheus, Datadog, Dynatrace, New Relic, Splunk, AppDynamics, GCP Cloud Monitoring — plus HTTP, command, Kubernetes, and SLO probes.
+- *How is the Resilience Score computed?* Per fault: `Fault Weight × Probe Success %`; experiment score is the weighted average across faults. Actions never count.
+- *Can we gate deployments?* Yes — Chaos step + Continuous Verification in the pipeline (they see it in Module 6).
+- *Load frameworks?* Locust GA; JMeter/K6 confirm status in-tenant.
+- *Relationship to LitmusChaos?* Harness is the primary CNCF maintainer of LitmusChaos; the product is the hardened, governed enterprise edition of the same engine.
+
+## Appendix D — Facilitation notes & live gotchas
+
+**Pre-flight (do this before attendees arrive):**
+- Run **discovery once** so it's warm; confirm the app URL loads in a browser.
+- **Pre-run the template experiment once** so logs/score render instantly during Module 3.
+- Confirm the **Prometheus endpoint is reachable** from the execution plane and your **PromQL returns data**.
+- Confirm the **CD pipeline runs green** and the **sample Locust** test works.
+- Confirm **your user can create Chaos Guard rules** (project admin) — this is admin-gated.
+- Have a **backup recording / screenshots** in case the cluster misbehaves.
+
+**Pacing:**
+- Keep Module 0 ≤ 10 min. The anchor is **Module 3** — do *not* rush the observability walkthrough; that's what customers remember.
+- Natural **pause points**: after Module 3 (quick concept check — "which of these drives the score: fault, probe, or action?") and after Module 6 (recap the differentiators).
+- Module 6's canary + CV run takes ~10 min — **kick off the run, then talk while it executes.**
+- Trim order if running long: **2 → 9 → 8 → 10**. Protect 3, 4, 5, 6 — they carry the differentiators.
+
+**Live gotchas:**
+- **CPU/network faults look like "nothing happened"** in the logs — that's exactly why we use **Pod Delete** (Sagar's tip): the impact is legible.
+- The **Prometheus probe fails silently** if the endpoint is unreachable or the query returns empty — always test it beforehand.
+- **Discovery takes ~a minute** — tell people not to spam *Discover Now*.
+- **Import as reference is read-only** — anyone who wants to edit must use **import as copy**.
+- If **Chaos Guard** isn't in the left nav, check **Project Settings → governance**.
+- If the tenant shows **Templates under Settings** rather than a ChaosHub, adjust Modules 3 & 7 wording (see checklist).
+
+## Appendix E — Sources (from the research behind this guide)
+
+**Chaos-engineering principles & best practice:**
+- Principles of Chaos Engineering — https://principlesofchaos.org/
+- PagerDuty, "10 Years of Failure Friday" — https://www.pagerduty.com/blog/insights/10-years-of-failure-friday-at-pagerduty-fostering-resilience-learning-and-reliability/
+- PagerDuty, "What is Chaos Engineering?" — https://www.pagerduty.com/resources/learn/what-is-chaos-engineering/
+- Gremlin, "Introduction to GameDays" — https://www.gremlin.com/community/tutorials/introduction-to-gamedays
+- O'Reilly, *Chaos Engineering* — Continuous Verification — https://www.oreilly.com/library/view/chaos-engineering/9781492043850/ch16.html
+
+**Competitive landscape:**
+- Gremlin product / pricing / tool comparison — https://www.gremlin.com/product · https://www.gremlin.com/community/tutorials/chaos-engineering-tools-comparison
+- AWS Fault Injection Service FAQs — https://aws.amazon.com/fis/faqs/
+- Azure Chaos Studio fault library — https://learn.microsoft.com/en-us/azure/chaos-studio/chaos-studio-fault-library
+- Chaos Mesh (CNCF) — https://chaos-mesh.org/
+- LitmusChaos (CNCF) & Harness relationship — https://www.cncf.io/projects/litmus/ · https://developer.harness.io/docs/chaos-engineering/resources/hce-vs-litmus/
+- Steadybit — https://steadybit.com/product/
+- Gartner Peer Insights, Chaos Engineering Tools — https://www.gartner.com/reviews/market/chaos-engineering-tools
+
+**Harness product docs:**
+- Resilience Testing overview — https://developer.harness.io/docs/resilience-testing/
+- Service Discovery & Application Maps — https://developer.harness.io/docs/platform/service-discovery/
+- What's supported (faults) — https://developer.harness.io/docs/chaos-engineering/whats-supported/
+- Probes — https://developer.harness.io/docs/resilience-testing/chaos-testing/probes/
+- Resilience Score — https://developer.harness.io/docs/chaos-engineering/features/experiments/resilience-score/
+- Chaos Guard / governance — https://developer.harness.io/docs/chaos-engineering/use-harness-ce/governance/governance-in-execution/
+- Load Testing — https://developer.harness.io/docs/resilience-testing/load-testing/get-started/
+- Continuous Verification — https://developer.harness.io/docs/continuous-delivery/verify/configure-cv/verify-deployments/
+- Prometheus probe — https://developer.harness.io/docs/chaos-engineering/guides/probes/apm-probes/prometheus-probe/
