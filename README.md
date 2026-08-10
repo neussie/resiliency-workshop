@@ -1,4 +1,4 @@
-# Resiliency Testing — Hands-On Lab
+# Resiliency Testing - Hands-On Lab
 
 Welcome! In this lab you'll use **Harness Resiliency Testing** to deliberately break a running
 application on Kubernetes, prove it can take the hit, and then automate that proof inside your
@@ -12,11 +12,11 @@ delivery pipeline.
 - Gate a canary deployment on a resilience score.
 - *(Optional)* share experiments as templates, run a load test, set up notifications, and explore the fault library.
 
-## The one idea to hold onto (30-second read)
+## What is an experiment?
 An **experiment** is made of three things:
 - **Faults** — the attack (e.g. *delete a pod*).
 - **Probes** — the checks that decide pass/fail (e.g. *"is the app still returning HTTP 200?"*). **Probes produce your Resilience Score.**
-- **Actions** — helpers during the run (delay, notify). They do **not** affect the score.
+- **Actions** — helpers during the run (delay, notify, integrate). They do **not** affect the score.
 
 Your **Resilience Score** is simply: of all the checks you defined, how many passed. 10 of 10 → 100%. 5 of 10 → ~50%.
 
@@ -27,18 +27,11 @@ Everything below is already set up for you:
 - Prometheus collecting metrics from the app.
 - A pre-built experiment template and a CD pipeline.
 
-You'll need your Harness login and your **project ID**. Wherever you see `<project_id>`, use yours.
-Your app is reachable here:
-
-```
-http://<project_id>.cie-bootcamp.co.uk
-```
-
-> Open that URL in a browser tab now — it should load. You'll come back to it while experiments run.
+We'll provide you your Harness login and your **project ID**. Wherever you see `<project_id>`, use yours. 
 
 ---
 
-# Part 1 — Core lab
+# Part 1 - Core lab
 
 ## Step 1 · Open Resiliency Testing
 1. In the Harness module menu (left), select **Resiliency Testing**.
