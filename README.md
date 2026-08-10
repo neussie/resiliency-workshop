@@ -81,17 +81,20 @@ Now map them:
 3. Open the **web-backend** experiment and click **Run** (top right).
 4. Open the **Run History** tab. Watch the run execute; when it finishes you'll see **Completed** and your **Resilience Score**.
 
-<!-- INSERT: Run History screenshot (Resilience Score Trends + Experiment Runs, 100/100) -->
+<img width="1298" height="94" alt="Screenshot 2026-08-10 at 17 24 49" src="https://github.com/user-attachments/assets/411e0539-f93e-4660-92bf-592c29607619" />
 
 5. Click the run to open its **timeline**: the **fault** (the exact pod that was deleted) and the **probe** (the health check that stayed green through the deletion) - all without touching `kubectl`.
 
-<!-- INSERT: run timeline screenshot (FAULT pod-delete + PROBE default-pod-level-probe) -->
+<img width="1339" height="351" alt="Screenshot 2026-08-10 at 17 23 20" src="https://github.com/user-attachments/assets/76e8673c-5eb6-44eb-97b0-fac08f41e18b" />
 
-> You've run your first experiment and read its Resilience Score in Run History.
+> You've run your first experiment and read its Resilience Score in Run History!.
 
 ## Step 4 · Run a ready-made experiment (from a template)
 *Goal: now do it the reusable way - run a standardized, ready-made experiment from a template.*
 1. Go to **Chaos Experiments** → click the dropdown next to **New Experiment** → **Create from Template**.
+
+<img width="246" height="224" alt="Screenshot 2026-08-10 at 17 37 57" src="https://github.com/user-attachments/assets/ad6b7a9b-d946-434e-a799-1991bd7443eb" />
+
 2. Select the **Gateway Service Pod Restart** template.
 3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
 4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
