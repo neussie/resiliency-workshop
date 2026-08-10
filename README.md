@@ -36,6 +36,8 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 ## Step 1 · Open Resiliency Testing
 1. In the Harness module menu (left), select **Resiliency Testing**.
 
+<img width="627" height="301" alt="Screenshot 2026-08-10 at 10 36 12" src="https://github.com/user-attachments/assets/b458d55f-81d4-4b91-b19b-0f82c989ac67" />
+
 > You should see the Resiliency Testing overview.
 
 ## Step 2 · Discover your services
