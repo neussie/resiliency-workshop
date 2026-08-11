@@ -31,10 +31,30 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 
 ---
 
+## Lab flow
+| # | Section | What you'll do |
+|---|---------|----------------|
+| 🚀 0 | Deploy Your Application | Stand up the sample app that every experiment will target. |
+| 🔍 1 | Discover Your Services & Map Them | Let Harness find your services and assemble a live application map. |
+| ⚡ 2 | Run an Auto-Generated Experiment | Run a platform-proposed experiment and read its Resilience Score. |
+| 📦 3 | Run a Ready-Made Experiment | Import and run a shared, parametric template against your app. |
+| 🧪 4 | Build Your Own Experiment | Compose a fault, target, and probe from scratch in the visual builder. |
+| 🔄 5 | Resiliency Probes | Score experiments with live Prometheus telemetry. |
+| 🛡️ 6 | Chaos Guard Controls | Put governance guardrails around who, what, where, and when. |
+| ❤️‍🩹 7 | Application Delivery Meets Resilience | Gate a canary deployment on health and resilience. |
+
+---
+
 # Part 1 - Core lab
 
-## Step 0 · Deploy your application
-*Prerequisite: If you haven't been through the DevOps lab in this session.*
+## 🚀 0. Deploy Your Application
+
+### Overview
+Stand up the sample frontend and backend application that every experiment in this lab will target, using the pre-built `workshop1` delivery pipeline.
+
+> [!NOTE]
+> Already deployed the app in the DevOps lab earlier in this session? You can skip ahead to Section 1.
+
 1. Open Continuous Delivery & GitOps.
 
 <img width="686" height="276" alt="Screenshot 2026-08-10 at 16 39 45" src="https://github.com/user-attachments/assets/c41c7616-cda0-4d18-8697-23b3af8e49d4" />
@@ -45,72 +65,128 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 
 3. Wait for your pipeline to run (it should take 1-2 minutes to execute).
 
-## Step 1 · Open Resiliency Testing
-1. In the Harness module menu (left), select **Resiliency Testing**.
+## 🔍 1. Discover Your Services & Map Them
+
+### Overview
+Let Harness find your application's services automatically and assemble them into a living Application Map. Rather than typing resource IDs by hand, you point Harness at your cluster and it draws the picture for you, giving every experiment that follows an accurate, always-current target.
+
+### Value
+- **Auto-discover services so Harness maps your app for you, with no resource IDs to type by hand.**
+- **A living application map that reflects real services and traffic, not a static picture.**
+- **The map becomes the launch pad for auto-generated, scored experiments in the next section.**
+
+### Step 1: Open Resiliency Testing
+In the Harness module menu on the left, select **Resiliency Testing**. This is home base for everything you'll do in this lab.
 
 <img width="627" height="301" alt="Screenshot 2026-08-10 at 10 36 12" src="https://github.com/user-attachments/assets/b458d55f-81d4-4b91-b19b-0f82c989ac67" />
 
-> You should see the Resiliency Testing overview.
+> [!NOTE]
+> You should land on the Resiliency Testing overview.
 
-## Step 2 · Discover your services
-*Goal: let Harness find your app's services automatically instead of typing them in.*
-1. Left menu → **Project Settings** → **Discovery**.
+### Step 2: Discover your services
+Let Harness find your app's services automatically instead of typing them in.
+
+1. From the left menu, go to **Project Settings**, then **Discovery**.
 2. Find the **DA-K8s** discovery agent, expand its side menu, and click **Discover Now**.
-3. Wait for discovery to finish (about a minute - don't click it again).
+3. Wait for discovery to finish (about a minute, and don't click it again).
 
 <img width="1276" height="320" alt="Screenshot 2026-08-10 at 15 34 44" src="https://github.com/user-attachments/assets/5a76f68b-eb55-4897-9797-c54374aa6db7" />
 
-Now map them:
-4. Double-click the **DA-K8s** agent.
-5. Open the **Application Maps** tab → **Create New Application Map**.
-6. Name it <pre>`workshop-am`</pre>
-select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for `web-backend-<project_id>` and `web-frontend-<project_id>`.
+### Step 3: Build your Application Map
+Turn those discovered services into a reusable map that Harness keeps current for you.
 
-> You now have an application map of your services.
+1. Double-click the **DA-K8s** agent.
+2. Open the **Application Maps** tab, then click **Create New Application Map**.
+3. Configure the map:
 
-## Step 3 · Run an auto-generated experiment
-*Goal: let the platform propose an experiment for you, run it, and read the result in Run History.*
-1. Left menu → **Insights** → **Application maps** → open your `workshop-am` map.
-2. Go to **Chaos Experiments** → choose **Only a few**.
+| Field | Value | Notes |
+|-------|-------|-------|
+| **Name** | <pre>`workshop-am`</pre> | |
+| **Services** | Your app's services | Use the search box; try `web-backend-<project_id>` and `web-frontend-<project_id>` if they're hard to find |
+
+4. Click **Save**.
+
+> [!TIP]
+> You now have an Application Map of your services, and Harness will keep it current on every future run.
+
+### What was achieved
+- **Automatically discovered your app's services on Kubernetes.**
+- **Built a reusable Application Map that stays current after every run.**
+- **Created the foundation Harness uses to generate and score experiments.**
+
+## ⚡ 2. Run an Auto-Generated Experiment
+
+### Overview
+Turn the Application Map you just built into a running, scored experiment in a single click. Harness proposes a starter experiment for your app, wires in a health probe, and hands you an objective Resilience Score, so your first result on your own application takes seconds rather than setup.
+
+### Value
+- **One click turns a discovered app into a ready-to-run, scored experiment, with no blank canvas.**
+- **Every generated experiment arrives pre-wired with a probe and a Resilience Score.**
+- **A fast, confident first win on your own application.**
+
+### Step 1: Generate the experiments
+1. From the left menu, go to **Insights**, then **Application maps**, and open your `workshop-am` map.
+2. Go to **Chaos Experiments** and choose **Only a few**.
 
 <img width="1022" height="425" alt="Screenshot 2026-08-10 at 17 10 07" src="https://github.com/user-attachments/assets/0d13999c-3ab7-4d03-815d-8bac6944f17d" />
 
-> Harness generates a starter set for you - a **Pod Delete** on your `frontend` and on your `backend`, each with a built-in health probe. No need to build anything.
+> [!NOTE]
+> Harness generates a starter set for you: a **Pod Delete** on your `frontend` and on your `backend`, each with a built-in health probe. There's nothing to build.
 
 <img width="1369" height="510" alt="Screenshot 2026-08-10 at 17 12 25" src="https://github.com/user-attachments/assets/b4620695-129d-476b-b2d6-1f10dc454e06" />
 
-3. Open the **web-backend** experiment and click **Run** (top right).
-4. Open the **Run History** tab. Watch the run execute; when it finishes you'll see **Completed** and your **Resilience Score**.
+### Step 2: Run it and read the score
+1. Open the **web-backend** experiment and click **Run** (top right).
+2. Open the **Run History** tab. Watch the run execute; when it finishes you'll see **Completed** and your **Resilience Score**.
 
 <img width="1298" height="94" alt="Screenshot 2026-08-10 at 17 24 49" src="https://github.com/user-attachments/assets/411e0539-f93e-4660-92bf-592c29607619" />
 
-5. Click the run to open its **timeline**: the **fault** (the exact pod that was deleted) and the **probe** (the health check that stayed green through the deletion) - all without touching `kubectl`.
+3. Click the run to open its **timeline**: the **fault** (the exact pod that was deleted) and the **probe** (the health check that stayed green through the deletion), all without touching `kubectl`.
 
 <img width="1339" height="351" alt="Screenshot 2026-08-10 at 17 23 20" src="https://github.com/user-attachments/assets/76e8673c-5eb6-44eb-97b0-fac08f41e18b" />
 
-> You've run your first experiment and read its Resilience Score in Run History!.
+### What was achieved
+- **Generated a Pod Delete experiment straight from your application map.**
+- **Ran it and read an objective Resilience Score in Run History.**
+- **Inspected the fault and probe on the timeline, with no `kubectl` needed.**
 
-## Step 4 · Run a ready-made experiment (from a template)
-*Goal: now do it the reusable way - run a standardized, ready-made experiment from a template.*
+## 📦 3. Run a Ready-Made Experiment (from a Template)
 
-> **Hypothesis:** deleting a backend pod should **not** cause 5xx errors on the frontend - the deployment keeps a healthy replica and recovers within seconds.
+### Overview
+Now do it the reusable way. Import a standardized, parametric experiment from a shared template and run it against your app. This is the "one definition, many teams" model: a single template adapts to any project, namespace, or service through inputs, while an app-level HTTP probe confirms your page keeps returning `200` throughout the fault.
 
-1. Go to **Chaos Experiments** → click the dropdown next to **New Experiment** → **Create from Template**.
+### Value
+- **Standardized templates let one definition serve many teams, for consistency at scale.**
+- **Parametric by design, so the same template adapts to any project, namespace, or service through inputs.**
+- **App-level HTTP probing confirms your page returns `200` before, during, and after the fault.**
+
+> [!NOTE]
+> **Hypothesis:** deleting a backend pod should **not** cause 5xx errors on the frontend. The deployment keeps a healthy replica and recovers within seconds.
+
+### Step 1: Create from the template
+1. Go to **Chaos Experiments**, click the dropdown next to **New Experiment**, then **Create from Template**.
 
 <img width="246" height="224" alt="Screenshot 2026-08-10 at 17 37 57" src="https://github.com/user-attachments/assets/ad6b7a9b-d946-434e-a799-1991bd7443eb" />
 
 2. Select the **service-restart** template.
-3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
-4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
+3. Choose **Import as copy** so you can tweak it. The alternative, *Import as reference*, is locked and read-only.
+4. Select your infrastructure:
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| **Environment** | <pre>`prod`</pre> | |
+| **Infrastructure** | <pre>`k8s`</pre> | |
 
 <img width="498" height="578" alt="Screenshot 2026-08-11 at 13 45 31" src="https://github.com/user-attachments/assets/d489edce-9d96-4b3d-8b43-aec0c5bbc4e8" />
 
-5. The template will take your app variables automatically, you only have to fill the name.
+5. The template picks up your app variables automatically; you only need to fill in the name.
 6. Continue to the experiment and click **Run**.
 
 <img width="1361" height="225" alt="Screenshot 2026-08-11 at 07 30 03" src="https://github.com/user-attachments/assets/b99d486d-35b6-49fd-a0e4-e21f366393c2" />
 
-While it runs (and after), explore these - they're the whole point:
+### Step 2: Explore the run
+While it runs (and after), explore these. They're the whole point:
+
 - The **timeline / graph**: the fault and its probes.
 
 <img width="1433" height="342" alt="Screenshot 2026-08-11 at 07 48 23" src="https://github.com/user-attachments/assets/aab7bcd8-e02e-406b-9aa5-39f350770fee" />
@@ -119,18 +195,34 @@ While it runs (and after), explore these - they're the whole point:
 
 <img width="1494" height="220" alt="Screenshot 2026-08-11 at 07 50 48" src="https://github.com/user-attachments/assets/aa29115c-74df-4bbd-ad14-95e4a6bea300" />
 
-- The **probes**: an **app-level HTTP check** (is your page returning `200`?) runs **before, during, and after** the fault - a step up from Step 3's pod-level probe. That's how you establish and re-confirm "steady state."
+- The **probes**: an **app-level HTTP check** (is your page returning `200`?) runs **before, during, and after** the fault, a step up from the pod-level probe in the auto-generated experiment. That's how you establish and re-confirm "steady state."
 - Your **Resilience Score** and the **report**.
 
 <img width="1485" height="388" alt="Screenshot 2026-08-11 at 07 52 01" src="https://github.com/user-attachments/assets/9afdb62a-d831-47f5-b236-43da39e6c5a8" />
 
-> Same loop as Step 3, but from a shared template - one definition many teams can reuse.
-
+> [!TIP]
 > *Going further (optional):* there's a second ready-made template, **service-availability-zone-failure**, that simulates a whole availability-zone outage (network loss across a zone) and checks the same frontend health. Import and run it the same way if you finish early.
 
-## Step 5 · Build your own experiment
-*Goal: create one from scratch. Peek back at Step 4 if you get stuck.*
-1. **Chaos Experiments → New Experiment → Create from scratch** Name it <pre>`my-pod-delete`</pre>
+### What was achieved
+- **Imported and ran a shared, parametric experiment template.**
+- **Validated app-level steady state right through a pod deletion.**
+- **Experienced the "one definition, many teams" model firsthand.**
+
+## 🧪 4. Build Your Own Experiment
+
+### Overview
+Compose an experiment from scratch in the visual, no-code builder: choose a fault, target your workload precisely, and attach a reusable probe so the Resilience Score reflects real application health. This is the pattern you'll reach for whenever you want a bespoke test the auto-generated set doesn't cover.
+
+### Value
+- **A visual, no-code builder for composing faults, targets, probes, and actions.**
+- **Reusable probe resources let you attach a managed `svc-health-check` rather than redefining checks.**
+- **The steady-state pattern, probing before, during, and after, proves the app truly held.**
+
+> [!TIP]
+> Peek back at the previous section if you get stuck. The moves are the same; this time you're assembling them yourself.
+
+### Step 1: Create the experiment
+1. Go to **Chaos Experiments**, then **New Experiment**, then **Create from scratch**. Name it <pre>`my-pod-delete`</pre>
 2. Select Environment `prod`, Infrastructure `k8s`.
 
 <img width="630" height="733" alt="Screenshot 2026-08-11 at 07 55 27" src="https://github.com/user-attachments/assets/ba23e13c-b87d-418f-a5f8-f012281dfd97" />
@@ -139,30 +231,43 @@ While it runs (and after), explore these - they're the whole point:
 
 <img width="456" height="257" alt="Screenshot 2026-08-11 at 07 57 17" src="https://github.com/user-attachments/assets/8257f097-e43a-4557-8807-12396d43a26b" />
 
-4. **Target Application:**
-   - Workload Kind: `deployment`
-   - Namespace: pick yours from the dropdown
-   - Target Workload names: pick your **backend** deployment
-   - Target Workload labels: pick the one for your backend from the dropdown
+### Step 2: Target your application
+Point the fault precisely at your backend deployment so the blast radius is exactly what you intend.
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| **Workload Kind** | <pre>`deployment`</pre> | |
+| **Namespace** | Pick yours | From the dropdown |
+| **Target Workload Names** | Your **backend** deployment | From the dropdown |
+| **Target Workload Labels** | The label for your backend | From the dropdown |
 
    <img width="594" height="453" alt="Screenshot 2026-08-11 at 07 59 24" src="https://github.com/user-attachments/assets/819502a4-85ac-4595-a0dc-2b6703835435" />
 
-5. Attach a probe so your score reflects whether the **app** stayed healthy:
-   - On the canvas, click the **+** after your fault → **Add a probe**.
-   - In **Select a Probe**, pick a ready-made **`svc-health-check`** HTTP probe → **Add to Experiment**.
+### Step 3: Attach a probe
+Attach a probe so your score reflects whether the **app** stayed healthy, not just whether the pod came back.
+
+1. On the canvas, click the **+** after your fault, then **Add a probe**.
+2. In **Select a Probe**, pick a ready-made **`svc-health-check`** HTTP probe, then **Add to Experiment**.
 
    <img width="657" height="861" alt="Screenshot 2026-08-11 at 08 43 59" src="https://github.com/user-attachments/assets/1219d361-342f-474f-8802-bdcb3379d360" />
    
-   - It attaches with a **blank URL** - open its **Probe Properties**, set **URL** to <pre>`<+variable.chaos_endpoint_url>`</pre> (Method `GET`, Criteria `==`, Response Code `200` are already set), then **Apply Changes**. Now the run fails if your frontend stops returning `200`.
-   > *Probes are reusable **resources** here - you select an existing one in the experiment. To author your own, use **Project Settings → Chaos Probes → + New Probe**.*
+3. It attaches with a **blank URL**. Open its **Probe Properties**, set **URL** to <pre>`<+variable.chaos_endpoint_url>`</pre> (Method `GET`, Criteria `==`, Response Code `200` are already set), then **Apply Changes**. Now the run fails if your frontend stops returning `200`.
 
-   > **Best practice:** check steady state **before, during, and after** the fault - one probe before, one running in parallel with the fault, one after. That's exactly the pattern the Step 4 template ships; add more `svc-health-check` probes here if you want the same coverage.
-   
+> [!NOTE]
+> Probes are reusable **resources** here: you select an existing one in the experiment. To author your own, use **Project Settings → Chaos Probes → + New Probe**.
 
-## 🔄 6. Resiliency Probes
+> [!TIP]
+> **Best practice:** check steady state **before, during, and after** the fault, one probe before, one running in parallel with the fault, one after. That's exactly the pattern the ready-made template ships; add more `svc-health-check` probes here if you want the same coverage.
+
+### What was achieved
+- **Built a Pod Delete experiment from scratch in the visual editor.**
+- **Targeted your backend deployment precisely by kind, namespace, workload, and labels.**
+- **Attached a reusable HTTP probe so the Resilience Score reflects real application health.**
+
+## 🔄 5. Resiliency Probes
 
 ### Overview
-Create resiliency probes laveraging APM tooling
+Create resiliency probes leveraging APM tooling
 
 ### Value
 - **Validate resilience with real telemetry** See how latency, errors, CPU and other metrics behave during failure.
@@ -276,7 +381,7 @@ During the previous step we created a reusable probe that can be attached to any
 
 
 
-## 🛡️ 7. Chaos Guard Controls
+## 🛡️ 6. Chaos Guard Controls
 
 ### Overview
 Establish guardrails to avoid unwanted experiments running based on environment, user, criticality and time
@@ -377,7 +482,7 @@ applicationmap=workshopam
 - **Scale chaos engineering safely without sacrificing governance or control**
 
 
-## ❤️‍🩹 8. Application Delivery Meets Resilience
+## ❤️‍🩹 7. Application Delivery Meets Resilience
 
 
 ### Overview
@@ -444,11 +549,11 @@ Deliver application changes safely using a canary deployment, automatically vali
 1. From the pipeline visual editor switch to yaml
 2. Click the edit button to go into edit mode
 3. Locate the service name (set on previous state) **TARGET_WORKLOAD_NAMES**
-4. Replace it with **backend-<project_name>-deployment-canary** where project_name is the harness project. Summary: add the suffic **-canary** to the target workload
+4. Replace it with **backend-<project_name>-deployment-canary** where project_name is the harness project. Summary: add the suffix **-canary** to the target workload
 5. Save the experiment
 
 
-### Step 2: Inject chaos experiments into Delivery pipelines
+### Step 3: Inject chaos experiments into Delivery pipelines
 
 1. From the module selection menu select Continuous Delivery & GitOps
 
