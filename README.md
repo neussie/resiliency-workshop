@@ -360,8 +360,9 @@ This condition `ALLOWS` the usage of unverified probes
 3. Navigate to the **Overview** tab
 4. Under the **Tags** option add the experiment to the application map
 
-<pre>`applicationmap=workshopam`</pre>
-
+```yaml
+applicationmap=workshopam
+```
 5. Save the experiment
 
 
