@@ -183,10 +183,23 @@ Chaos Guard has two parts: a **Condition** (the *what/where* - which faults are 
    - **WHICH:** the builder needs a scope - enter `*` in both **NAMESPACE** and **APP LABEL** (= any namespace, any app).
    - **USING:** enter `*` for the **service account**.
    - **Save.** *(All four are required before Save enables; `*` just means "match everything.")*
+
+   <img width="1566" height="129" alt="Screenshot 2026-08-11 at 10 20 23" src="https://github.com/user-attachments/assets/29d9e6ed-e4ac-47b5-99d1-f5789f6f1ab6" />
+   
 2. **Rules → + New Rule.**
    - Name it; under **User group(s)** pick **All Project Users** - this keeps the rule inside *your* project, so you can't affect anyone else's.
-   - *(Optional)* add a **time window** to also block runs during set hours.
+   - *(Optional)* add a **time window** to apply the rule during set hours.
+
+   <img width="965" height="640" alt="Screenshot 2026-08-11 at 10 23 24" src="https://github.com/user-attachments/assets/3613431d-2469-4e62-a728-187c89c4b224" />
+   
    - **Add Conditions → select `block-pod-delete` → Done → Save.**
+  
+   <img width="1094" height="616" alt="Screenshot 2026-08-11 at 10 23 34" src="https://github.com/user-attachments/assets/7feb1cb4-acdc-40a7-9ca5-35756ec6e1f9" />
+
+   - Click **Enable** to enable your Rule.
+  
+   <img width="1581" height="99" alt="Screenshot 2026-08-11 at 10 25 56" src="https://github.com/user-attachments/assets/286fb156-d77b-4b69-af99-56ae44018dc6" /> 
+   
 3. Go back to your **`my-pod-delete`** experiment from Step 5 and click **Run**.
 
 > The run is blocked **before it starts**. Chaos Guard sits on top of your normal access controls: access decides *who can act*; Chaos Guard decides *what and when - even for people who otherwise could*.
