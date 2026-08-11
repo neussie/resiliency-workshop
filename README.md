@@ -230,7 +230,29 @@ avg(container_memory_rss{namespace=\"<+probe.variables.namespace>\",container=\"
 
 During the previous step we created a reusable probe that can be attached to any of our experiments. Now it is time to add it into the experiment we created previously. 
 
-1. Valida
+1. From the **left-hand side menu**, select **Chaos Experiments**
+2. Drill down to the experiment we created earlier **my-pod-delete**
+3. Enable the visual studio popup editor, by hovering over the pod-delete fault
+4. Select **+Add a parallel node** and then **Add a probe**
+
+<img width="542" height="261" alt="image" src="https://github.com/user-attachments/assets/426eff18-4ac9-4aa1-b27b-f65031723dac" />
+
+5. From the list of available probes select the **prometheus-probe**
+6. Add to the experiment
+7. While the popup window is open navigate to the **Variables tab**
+
+> [!NOTE]
+> If you closed the popup window to open it again click on the node for the prometheus probe in the visual studio editor of the pipeline
+
+8. For the variables copy the values below
+ 
+| Variable | Value | Notes |
+|--------|--------|-------|
+| **namespace** | <pre>`<+variable.chaos_namespace>`</pre>  ||
+| **container** | <pre>`<+variable.chaos_backend_container>`</pre>  ||
+
+9. Click on Apply Changes
+10. And then Save
 
 
 
