@@ -62,7 +62,7 @@ score is the weighted average across faults. 10/10 probes pass → 100%; 5/10 �
 
 Participants should NOT build these; they must exist so the workshop starts fast.
 
-- [ ] Kubernetes cluster + the sample app deployed (**frontend** + **backend** web services). Confirmed: namespace `<group>-ns` (e.g. `barclays517-ns`), deployments `frontend-<project_id>-deployment` / `backend-<project_id>-deployment`, infra `prod/k8s`.
+- [ ] Kubernetes cluster + the sample app deployed (**frontend** + **backend** web services). Confirmed: namespace is **org-scoped** - hardcoded in the `prod`/`k8s` infra definition and shared by all projects in the org; per-participant isolation is by deployment name + `releaseName: release-<+INFRA_KEY>`. **Namespace = org name without the `-org` suffix (just the name + numbers), then `-ns`** (e.g. org `barclays517-org` → `barclays517-ns`). Participants find their org by hovering **Project** in the left nav. Deployments `frontend-<project_id>-deployment` / `backend-<project_id>-deployment`, infra `prod/k8s`.
 - [ ] Harness project per participant (or shared org with per-participant projects). `⟨verify⟩`
 - [ ] Discovery Agent installable / chaos infrastructure connected. `⟨verify⟩`
 - [ ] **Prometheus** running and reachable from the execution plane, app metrics exposed. `⟨verify⟩`
@@ -127,7 +127,7 @@ Participants should NOT build these; they must exist so the workshop starts fast
 **Flow:**
 1. New Experiment → **Create From Template** (dropdown) → pick **`service-restart-test`**.
 2. Import **as copy** (so they can tinker) vs **as reference** (locked) - explain both.
-3. Select **Environment / Infrastructure** (`prod` / `k8s`), then fill inputs `PROJECT_ID` / `TARGET_NAMESPACE` / `TARGET_SERVICE_NAME` (= `backend-<project_id>-deployment`).
+3. Select **Environment / Infrastructure** (`prod` / `k8s`), then fill inputs `PROJECT_ID` / `TARGET_NAMESPACE` (= org name without the `-org` suffix, then `-ns` - e.g. `barclays517-org` → `barclays517-ns`; participants get their org by hovering **Project** in the left nav) / `TARGET_SERVICE_NAME` (= `backend-<project_id>-deployment`).
 4. **Run it.**
 5. **Walk the run - this is the money shot:**
    - Timeline / graph view of fault + probes.

@@ -108,7 +108,7 @@ Now map them:
 
 5. Fill the template inputs so it targets your app:
    - `PROJECT_ID`: your `<project_id>`
-   - `TARGET_NAMESPACE`: your app's namespace *(your facilitator will confirm)*
+   - `TARGET_NAMESPACE`: your app's namespace. It's based on your **org**, not your project - hover over **Project** in the left nav to find your org name (e.g. `barclays517-org`); the namespace is that name **without the `-org` suffix**, plus `-ns` (e.g. `barclays517-ns`).
    - `TARGET_SERVICE_NAME`: your **backend** deployment (e.g. `backend-<project_id>-deployment`)
 6. Continue to the experiment and click **Run**.
 
@@ -201,7 +201,7 @@ While it runs (and after), explore these - they're the whole point:
 
 ## Values your facilitator will confirm
 - `<project_id>` - your Harness project id (used in the app URL).
-- Your app's namespace and backend deployment name.
+- Your **backend** deployment name (`backend-<project_id>-deployment`). *(Your namespace you can find yourself - see Step 4: it's your org name without the `-org` suffix, plus `-ns`.)*
 - The Prometheus endpoint and the exact PromQL query for Step 5.
 - Environment / infrastructure names, if different from `prod` / `k8s`.
 
