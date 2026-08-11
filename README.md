@@ -173,13 +173,23 @@ While it runs (and after), explore these - they're the whole point:
 
 ## Step 6 · Make chaos safe with Chaos Guard
 *Goal: guardrails so experiments can't cause a real outage.*
-1. Left menu → **Chaos Guard**.
-2. Create a new rule:
-   - **Deny** node-level faults (so no one can drain a node).
-   - Add a **time window** that blocks runs during business-critical hours.
-3. Save, then try to run something the rule forbids.
+
+Chaos Guard has two parts: a **Condition** (the *what/where* - which faults are blocked, on which infrastructure) and a **Rule** (the *who/when* - which user groups, during which time windows). A rule enforces one or more conditions, so you build the condition first, then wrap a rule around it.
+
+1. **Project Settings → Chaos Guard → Conditions → + New Condition.**
+   - Name it (e.g. `block-pod-delete`), Infrastructure type **Kubernetes**.
+   - **WHAT:** leave it on **BLOCKS**, `FAULT` **EQUAL TO** `pod-delete`.
+   - **WHERE:** select your **`k8s`** infrastructure (required).
+   - **Save.**
+2. **Rules → + New Rule.**
+   - Name it; under **User group(s)** pick **All Project Users** - this keeps the rule inside *your* project, so you can't affect anyone else's.
+   - *(Optional)* add a **time window** to also block runs during set hours.
+   - **Add Conditions → select `block-pod-delete` → Done → Save.**
+3. Go back to your **`my-pod-delete`** experiment from Step 5 and click **Run**.
 
 > The run is blocked **before it starts**. Chaos Guard sits on top of your normal access controls: access decides *who can act*; Chaos Guard decides *what and when - even for people who otherwise could*.
+
+> *Why block `pod-delete` here?* Only so you can watch the guardrail fire against the experiment you already built. In production you'd typically block **destructive node-level faults** (drain a node, node restart) so no one can take out a whole node - same mechanism, just a different fault in the Condition.
 
 ## Step 7 · Gate a canary deployment on resilience
 *Goal: make resilience an automatic quality gate in your pipeline.*

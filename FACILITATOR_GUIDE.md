@@ -165,11 +165,11 @@ Participants should NOT build these; they must exist so the workshop starts fast
 **Objective:** answer "how do we allow this without causing a real outage?"
 
 **Flow:**
-1. Create a Chaos Guard rule (project admin): **deny node-level faults**.
-2. Add a **time-window** condition: block a business-critical window.
-3. Attempt a run that violates the rule → show it's **blocked before execution**.
+1. **Conditions tab → + New Condition:** BLOCK `pod-delete` on the `k8s` infrastructure (WHAT = fault, WHERE = infra). Save.
+2. **Rules tab → + New Rule:** apply to **All Project Users** (keeps it project-scoped), *(optional)* add a **time window**, then **Add Conditions → select the condition → Save**.
+3. Re-run the participant's **`my-pod-delete`** → show it's **blocked before execution**.
 
-**Exact steps:** `TODO` (new - `⟨verify⟩` Chaos Guard nav and who can configure it).
+**Exact steps:** **Project Settings → Chaos Guard** (a card under Resilience Testing Settings, *not* a top-level left-nav item). Two tabs: **Conditions** (the *what/where*, built via **+ New Condition**) and **Rules** (the *who/when* - user groups + time windows, built via **+ New Rule**); a rule *attaches* existing conditions, so build the condition first - an empty Conditions list is why the rule's "Add Conditions" step shows nothing. Everything is **project-scoped**: a rule only ever targets its own project's **All Project Users**, so participants can't affect each other (only you, as admin, could pick an org/account group - don't). Rule creation is **project-admin gated**. *(We block `pod-delete` so the block is visible against the Module 4 experiment; frame the real-world value around destructive **node-level faults**.)*
 
 **Talk track:** Chaos Guard is **runtime governance on top of RBAC**: RBAC says *who can*, Chaos Guard says *what/when even they can't*. Give devs freedom to test, but ring-fence destructive faults and critical hours (cron them out-of-hours instead). Only project admins set rules.
 
@@ -277,7 +277,7 @@ Verify these live in the workshop tenant, then fill in the `TODO` / `⟨verify�
 - [ ] **Load Testing frameworks:** Locust GA; confirm JMeter/K6 availability / feature flags. Module 8.
 - [ ] **OOTB fault count** to quote. Module 10.
 - [ ] **Prometheus probe** PromQL + endpoint against the lab's actual metrics. Module 4.
-- [ ] **Chaos Guard** nav + who can configure. Module 5.
+- [x] **Chaos Guard** nav confirmed: **Project Settings → Chaos Guard** (project-admin to configure). Module 5.
 - [ ] **Canary + Verify + Chaos step** nav in the current pipeline UI. Module 6.
 - [ ] Confirm env/infra names (`prod` / `k8s`) and the app endpoint format.
 
@@ -378,7 +378,7 @@ Trim order if running long: 2 → 9 → 8 → 10. Never cut 3, 4, 5, or 6 (they 
 - The **Prometheus probe fails silently** if the endpoint is unreachable or the query returns empty - always test it beforehand.
 - **Discovery takes ~a minute**: tell people not to spam *Discover Now*.
 - **Import as reference is read-only**: anyone who wants to edit must use **import as copy**.
-- If **Chaos Guard** isn't in the left nav, check **Project Settings → governance**.
+- **Chaos Guard** lives under **Project Settings → Chaos Guard** (Resilience Testing Settings cards), not the left nav.
 - If the tenant shows **Templates under Settings** rather than a ChaosHub, adjust Modules 3 & 7 wording (see checklist).
 
 ## Appendix E - Sources (from the research behind this guide)
