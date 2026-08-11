@@ -207,12 +207,26 @@ Chaos Guard has two parts: a **Condition** (the *what/where* - which faults are 
 ## Step 7 · Gate a canary deployment on resilience
 *Goal: make resilience an automatic quality gate in your pipeline.*
 1. Module menu → **Continuous Delivery & GitOps** → **Pipelines** → open the existing pipeline.
-2. In the **Deploy** stage's **canary** phase (after the canary deploy, before the approval), click **+** to add a step → **Verify**:
+
+   <img width="785" height="87" alt="Screenshot 2026-08-11 at 14 01 45" src="https://github.com/user-attachments/assets/cf67f888-1f06-4504-b939-9565ac1d4fef" />
+   
+3. In the **backend** stage's **Canary Deployment** phase (after the Canary Deployment, before the Canary Delete), click **+** to add a step → **AI Verify**:
+
+   <img width="331" height="232" alt="Screenshot 2026-08-11 at 14 04 08" src="https://github.com/user-attachments/assets/688e9d99-4f85-4a06-8b51-c5317389277c" />
+   
    - Name `Verify`, Type `Canary`, Sensitivity `Low`, Duration `10 mins`
-3. Under the Verify step, click **+** to add a step **in parallel** → **Chaos**:
+
+   <img width="600" height="642" alt="Screenshot 2026-08-11 at 14 06 42" src="https://github.com/user-attachments/assets/36318017-78ea-4104-8388-2244f4bd7473" />
+   
+4. Under the Verify step, click **+** to add a step **in parallel** → **Chaos Experiment**:
    - Name `Chaos`, Experiment: `my-pod-delete` (or the template experiment), Expected Resilience Score `50`
-4. **Apply Changes → Save → Run** (Branch `main`).
-5. After it runs, review the result: if the resilience score is ≥ 50 the canary proceeds; if not, it holds / rolls back.
+   
+   <img width="600" height="767" alt="Screenshot 2026-08-11 at 14 09 05" src="https://github.com/user-attachments/assets/3ac08e64-863a-4aa3-845b-7aedb36ac030" />
+
+   <img width="1143" height="749" alt="Screenshot 2026-08-11 at 14 10 04" src="https://github.com/user-attachments/assets/b7b6d6ef-bc05-49d7-8d15-fa2b2f51dc79" />
+   
+6. **Apply Changes → Save → Run** (Branch `main`).
+7. After it runs, review the result: if the resilience score is ≥ 50 the canary proceeds; if not, it holds / rolls back.
 
 > You've turned resilience into a deployment gate - chaos running **inside** your pipeline, not as a separate tool.
 
