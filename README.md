@@ -130,7 +130,7 @@ While it runs (and after), explore these - they're the whole point:
 
 ## Step 5 · Build your own experiment
 *Goal: create one from scratch. Peek back at Step 4 if you get stuck.*
-1. **Chaos Experiments → New Experiment → Create from scratch** Name it `my-pod-delete`.
+1. **Chaos Experiments → New Experiment → Create from scratch** Name it <pre>`my-pod-delete`</pre>
 2. Select Environment `prod`, Infrastructure `k8s`.
 
 <img width="630" height="733" alt="Screenshot 2026-08-11 at 07 55 27" src="https://github.com/user-attachments/assets/ba23e13c-b87d-418f-a5f8-f012281dfd97" />
