@@ -114,9 +114,17 @@ Now map them:
 
 While it runs (and after), explore these - they're the whole point:
 - The **timeline / graph**: the fault and its probes.
+
+<img width="1433" height="342" alt="Screenshot 2026-08-11 at 07 48 23" src="https://github.com/user-attachments/assets/aab7bcd8-e02e-406b-9aa5-39f350770fee" />
+
 - The **logs**: you can see *exactly which pod was deleted and which new pod replaced it*, without ever touching `kubectl`.
+
+<img width="1494" height="220" alt="Screenshot 2026-08-11 at 07 50 48" src="https://github.com/user-attachments/assets/aa29115c-74df-4bbd-ad14-95e4a6bea300" />
+
 - The **probes**: an **app-level HTTP check** (is your page returning `200`?) runs **before, during, and after** the fault - a step up from Step 3's pod-level probe. That's how you establish and re-confirm "steady state."
 - Your **Resilience Score** and the **report**.
+
+<img width="1485" height="388" alt="Screenshot 2026-08-11 at 07 52 01" src="https://github.com/user-attachments/assets/9afdb62a-d831-47f5-b236-43da39e6c5a8" />
 
 > Same loop as Step 3, but from a shared template - one definition many teams can reuse.
 
@@ -124,13 +132,23 @@ While it runs (and after), explore these - they're the whole point:
 
 ## Step 5 · Build your own experiment
 *Goal: create one from scratch. Peek back at Step 4 if you get stuck.*
-1. **Chaos Experiments → New Experiment → Blank Canvas.** Name it `my-pod-delete`.
+1. **Chaos Experiments → New Experiment → Create from scratch** Name it `my-pod-delete`.
 2. Select Environment `prod`, Infrastructure `k8s`.
+
+<img width="630" height="733" alt="Screenshot 2026-08-11 at 07 55 27" src="https://github.com/user-attachments/assets/ba23e13c-b87d-418f-a5f8-f012281dfd97" />
+
 3. **Add Fault → Pod Delete.**
+
+<img width="456" height="257" alt="Screenshot 2026-08-11 at 07 57 17" src="https://github.com/user-attachments/assets/8257f097-e43a-4557-8807-12396d43a26b" />
+
 4. **Target Application:**
    - Workload Kind: `deployment`
    - Namespace: pick yours from the dropdown
-   - Name: pick your **backend** deployment
+   - Target Workload names: pick your **backend** deployment
+   - Target Workload labels: pick the one for your backend from the dropdown
+
+   <img width="594" height="453" alt="Screenshot 2026-08-11 at 07 59 24" src="https://github.com/user-attachments/assets/819502a4-85ac-4595-a0dc-2b6703835435" />
+   
 5. Add a probe to check the app stays healthy:
    - **+ Add probe → HTTP probe**
    - URL: `http://<project_id>.cie-bootcamp.co.uk`
