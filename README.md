@@ -146,7 +146,7 @@ While it runs (and after), explore these - they're the whole point:
    - Target Workload labels: pick the one for your backend from the dropdown
 
    <img width="594" height="453" alt="Screenshot 2026-08-11 at 07 59 24" src="https://github.com/user-attachments/assets/819502a4-85ac-4595-a0dc-2b6703835435" />
-   
+
 5. Attach a probe so your score reflects whether the **app** stayed healthy:
    - On the canvas, click the **+** after your fault → **Add a probe**.
    - In **Select a Probe**, pick a ready-made **`svc-health-check`** HTTP probe → **Add to Experiment**.
@@ -158,7 +158,75 @@ While it runs (and after), explore these - they're the whole point:
 
    > **Best practice:** check steady state **before, during, and after** the fault - one probe before, one running in parallel with the fault, one after. That's exactly the pattern the Step 4 template ships; add more `svc-health-check` probes here if you want the same coverage.
    
-6. *(Optional)* Add a **metric** probe. There's no Prometheus probe yet, so create it first: **Project Settings → Chaos Probes → + New Probe → APM Probe → APM Type: Prometheus**, using your facilitator's Prometheus endpoint + PromQL (e.g. "error rate below 5%"). Then back in the experiment: **+ → Add a probe** → select it.
+
+## 🔄 6. Resiliency Probes
+
+### Overview
+Create resiliency probes laveraging APM tooling
+
+### Value
+blah blah blah
+
+### Step 1: Create a Probe
+1. From the **left-hand side menu**, select **Project Settings**
+2. Then select **Chaos Probes**
+3. Create a new probe by clicking on **+ New Probe**
+4. From the list of available probes select the **APM Probe**
+
+> [!NOTE]
+> APM Probe allows you to connect to your application monitoring tools such as DataDog, AppDynamics and others
+
+5. Fill in the details in the Overview Tab
+
+| Field | Value |
+|--------|--------|
+| **Name** | <pre>`prometheus-probe`</pre> |
+| **APM Type** | Prometheus |
+| **Connector** | Prometheus |
+
+6. Click on **Next** to setup **variables**
+
+## Variable 1: namespace
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Type** | String ||
+| **Name** | <pre>`namespace`</pre> ||
+| **Value** | Runtime Input |**Click the Sigma icon next to the input box to set the variable as runtime input**|
+
+## Variable 2: container
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Type** | String ||
+| **Name** | <pre>`container`</pre> ||
+| **Value** | Runtime Input |**Click the Sigma icon next to the input box to set the variable as runtime input**|
+
+7. Click next to setup the **Query**
+8. Set the query as per the box below
+
+```yaml
+avg(container_memory_rss{namespace=\"<+probe.variables.namespace>\",container=\"<+probe.variables.container>\"})
+```
+9. Click next to setup **Properties**
+10. Modify only the number of attempts
+
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Attempts** | <pre>`10`</pre>  ||
+
+
+
+
+
+
+
+### Step 2: Attach a probe
+
+### Step 3: Validate the probe and explain results
+
+
+
+
+
 
 <img width="967" height="446" alt="Screenshot 2026-08-11 at 09 09 25" src="https://github.com/user-attachments/assets/99da7e86-44b4-473a-a513-59442a74e102" />
 
