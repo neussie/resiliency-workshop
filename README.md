@@ -165,7 +165,12 @@ While it runs (and after), explore these - they're the whole point:
 Create resiliency probes laveraging APM tooling
 
 ### Value
-blah blah blah
+- **Validate resilience with real telemetry** See how latency, errors, CPU and other metrics behave during failure.
+- **Automate pass/fail decisions** Turn observability data into objective experiment success criteria.
+- **Enforce SLOs during chaos** Validate thresholds such as p99 latency or error-rate limits automatically.
+- **Use existing monitoring tools**  Integrate with Prometheus, Dynatrace, Datadog, New Relic, Splunk and more.
+- **Keep credentials secure** Reuse Harness connectors and centrally managed secrets.
+- **Combine multiple validation signals** Correlate APM, HTTP and command probes for stronger resilience checks.
 
 ### Step 1: Create a Probe
 1. From the **left-hand side menu**, select **Project Settings**
