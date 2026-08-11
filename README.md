@@ -155,7 +155,7 @@ While it runs (and after), explore these - they're the whole point:
 
    <img width="657" height="861" alt="Screenshot 2026-08-11 at 08 43 59" src="https://github.com/user-attachments/assets/1219d361-342f-474f-8802-bdcb3379d360" />
    
-   - It attaches with a **blank URL** - open its **Probe Properties**, set **URL** to `http://<project_id>.cie-bootcamp.co.uk` (Method `GET`, Criteria `==`, Response Code `200` are already set), then **Apply Changes**. Now the run fails if your frontend stops returning `200`.
+   - It attaches with a **blank URL** - open its **Probe Properties**, set **URL** to <pre>`<+variable.chaos_endpoint_url>`</pre> (Method `GET`, Criteria `==`, Response Code `200` are already set), then **Apply Changes**. Now the run fails if your frontend stops returning `200`.
    > *Probes are reusable **resources** here - you select an existing one in the experiment. To author your own, use **Project Settings → Chaos Probes → + New Probe**.*
 
    > **Best practice:** check steady state **before, during, and after** the fault - one probe before, one running in parallel with the fault, one after. That's exactly the pattern the Step 4 template ships; add more `svc-health-check` probes here if you want the same coverage.
