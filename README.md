@@ -26,14 +26,14 @@ We'll provide your Harness login and your **project ID**. Wherever you see `<pro
 ## Lab flow
 | # | Section | What you'll do |
 |---|---------|----------------|
-| 🚀 0 | Deploy Your Application | Stand up the sample app that every experiment will target. |
-| 🔍 1 | Discover Your Services & Map Them | Let Harness find your services and assemble a live application map. |
-| ⚡ 2 | Run an Auto-Generated Experiment | Run a platform-proposed experiment and read its Resilience Score. |
-| 📦 3 | Run a Ready-Made Experiment | Import and run a shared, parametric template against your app. |
-| 🧪 4 | Build Your Own Experiment | Compose a fault, target, and probe from scratch in the visual builder. |
-| 🔄 5 | Resiliency Probes | Score experiments with live Prometheus telemetry. |
-| 🛡️ 6 | Chaos Guard Controls | Put governance guardrails around who, what, where, and when. |
-| ❤️‍🩹 7 | Application Delivery Meets Resilience | Gate a canary deployment on health and resilience. |
+| 0 | Deploy Your Application | Stand up the sample app that every experiment will target. |
+| 1 | Discover Your Services & Map Them | Let Harness find your services and assemble a live application map. |
+| 2 | Run an Auto-Generated Experiment | Run a platform-proposed experiment and read its Resilience Score. |
+| 3 | Run a Ready-Made Experiment | Import and run a shared, parametric template against your app. |
+| 4 | Build Your Own Experiment | Compose a fault, target, and probe from scratch in the visual builder. |
+| 5 | Resiliency Probes | Score experiments with live Prometheus telemetry. |
+| 6 | Chaos Guard Controls | Put governance guardrails around who, what, where, and when. |
+| 7 | Application Delivery Meets Resilience | Gate a canary deployment on health and resilience. |
 
 ---
 
