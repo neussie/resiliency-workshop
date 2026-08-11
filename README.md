@@ -276,8 +276,33 @@ During the previous step we created a reusable probe that can be attached to any
 
 
 
-## Step 6 · Make chaos safe with Chaos Guard
-*Goal: guardrails so experiments can't cause a real outage.*
+## 🛡️ 7. Chaos Guard Controls**
+
+### Overview
+Establish guardrails to avoid unwanted experiments running based on environment, user, criticality and time
+
+### Value
+- **Limit blast radius: Restrict faults to approved clusters, namespaces, workloads, and service accounts**
+- **Control who, what, where and when**
+- **Enforce approved execution windows: Prevent chaos experiments from running outside authorized periods**
+
+### Step 1: Create a Condition
+> [!NOTE]
+> Condition define the criteria of which faults are blocked, on which infrastructure
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Chaos Guard has two parts: a **Condition** (the *what/where* - which faults are blocked, on which infrastructure) and a **Rule** (the *who/when* - which user groups, during which time windows). A rule enforces one or more conditions, so you build the condition first, then wrap a rule around it.
 
