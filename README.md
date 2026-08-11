@@ -429,10 +429,10 @@ Deliver application changes safely using a canary deployment, automatically vali
 
 9. From the navigation bar select **Tune Fault**
 
-| Input       | Value | Notes |
-| ----------- | ----- |
-| Total Chaos Duration |<pre>`600`</pre>|
-| Memory Consumption |<pre>`300`</pre>|
+| Input       | Value |
+| ----------- | ----- | 
+| Total Chaos Duration |<pre>`600`</pre>| 
+| Memory Consumption |<pre>`300`</pre>| 
 | Number of workers |<pre>`1`</pre>|
 | Pod affected percentage|<pre>`100`</pre>|
 
