@@ -265,7 +265,7 @@ During the previous step we created a reusable probe that can be attached to any
    
 <img width="2599" height="201" alt="image" src="https://github.com/user-attachments/assets/03ddda57-dfb6-4f35-95ef-a2b52de3622a" />
 
-### Summary
+### What was achieved
 - **Reusable Prometheus APM probe in Harness Chaos Engineering**
 - **Parameterise the probe so it can be reused across different namespaces and workloads**
 - **Query live application/container telemetry from Prometheus during a chaos experiment**
