@@ -276,7 +276,7 @@ During the previous step we created a reusable probe that can be attached to any
 
 
 
-## 🛡️ 7. Chaos Guard Controls**
+## 🛡️ 7. Chaos Guard Controls
 
 ### Overview
 Establish guardrails to avoid unwanted experiments running based on environment, user, criticality and time
@@ -328,16 +328,41 @@ Establish guardrails to avoid unwanted experiments running based on environment,
 
 This condition BLOCKS any service account `NOT EQUAL TO` the following
 
-| Field |
-|--------|
-|`sa` |
+| Field | Notes |
+|--------|-----|
+|`sa` | Make sure to press enter to add the value |
 
 This condition `ALLOWS` the usage of unverified probes
 
 
+### Step 2: Create a Rule
+1. From the same screen navigate to **Rules**
+2. Create new rule using **+ New Rule**
+
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Name** | <pre>`rule-am`</pre> ||
+| **User Group** | `All Project Users` | **dropdown**|
+| **Select Time Window** | `pick something in range` | **popup**|
+
+3. Continue to **Add Conditions**
+4. Pick the **amcondition**
+5. Click done
+
+> [!NOTE]
+> Enable the rule via the status **toggle** button
 
 
 
+### Step 3: Validate the rule
+1. From the **left-hand side menu**, select **Chaos Experiments**
+2. Open the `my-pod-delete` experiment
+3. Navigate to the **Overview** tab
+4. Under the **Tags** option add the experiment to the application map
+
+<pre>`applicationmap=workshopam`</pre>
+
+5. Save the experiment
 
 
 
