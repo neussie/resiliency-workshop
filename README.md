@@ -352,8 +352,6 @@ This condition `ALLOWS` the usage of unverified probes
 > [!NOTE]
 > Enable the rule via the status **toggle** button
 
-
-
 ### Step 3: Validate the rule
 1. From the **left-hand side menu**, select **Chaos Experiments**
 2. Open the `my-pod-delete` experiment
@@ -363,106 +361,147 @@ This condition `ALLOWS` the usage of unverified probes
 ```yaml
 applicationmap=workshopam
 ```
+5. After adding the new tag click **next** and then **save** to save the experiment
+
+### Step 4: Run the experiment
+1. Try to run the experiment and review the violations
+
+<img width="550" height="367" alt="image" src="https://github.com/user-attachments/assets/cd1c79a3-a97a-4c8e-9bb2-c7a9cfc8eaf6" />
+
+### What was achieved
+
+- **Protect critical applications from unauthorized or unsafe chaos experiments**
+- **Control the blast radius by restricting faults, namespaces, services, and infrastructure**
+- **Enforce who, where, and when chaos experiments can run**
+- **Block non-compliant experiments before disruption happens**
+- **Scale chaos engineering safely without sacrificing governance or control**
+
+
+## ❤️‍🩹 8. Application Delivery Meets Resilience
+
+
+### Overview
+Deliver application changes safely using a canary deployment, automatically validating the release with continuous verification and resiliency testing, with embedded rollback if health or resilience checks fail
+
+### Value
+- **Reduce release risk: Gradually expose the new version before promoting it to all users**
+- **Validate with real telemetry: Use health, performance, and error signals to prove the release is healthy**
+- **Test resilience before promotion: Inject controlled failure and confirm the canary can withstand disruption**
+- **Automate go/no-go decisions: Promote only when verification and resilience criteria pass**
+- **Rollback automatically: Restore the last good version when degradation or resilience failures are detected**
+- **Build resilience into delivery: Make deployment, verification, chaos testing, and recovery part of one automated release flow**
+
+
+### Step 1: Create a memory hog experiment
+1. From the left hand menu, go to **Chaos Experiments**
+2. Select **+New Experiment**
+
+| Input                        | Value|  
+| ---------------------------- | ------ |
+| Name                         |<pre>`pod-memory`</pre>|
+
+3. Select **Harness Infra**
+
+  ![Screenshot 2024-11-28 at 14 24 21](https://github.com/user-attachments/assets/c47834a3-fe88-44ed-be7e-7cee97bcb303)
+
+  - Click on **"Select a chaos Infrastructure"**
+
+ 
+4. On the popup window select the available options
+
+| Input                        | Value|  Notes 
+| ---------------------------- | ------ |------ |
+| Select Environment|prod| popup |
+| Select Infrastructure|k8s| popup |
+
+5. Click on next to navigate to the experiment builder
+6. Click on **Add** and then **Add Fault**
+7. From the list of available faults select **Pod Memory Hog**
+8. From the navigation bar select **Target Application**
+
+| Input                        | Value | Notes |
+| ---------------------------- | ------ | -------|
+| Target Workload Kind|deployment| **dropdown**|
+| Target Workload Namespace ||**dropdown**|
+| Target Workload Names | `backend....`|**dropdown** |
+|Target Workload Labels | leave empty||
+
+
+9. From the navigation bar select **Tune Fault**
+
+| Input       | Value | Notes 
+| ----------- | ----- |
+| Total Chaos Duration |<pre>`600`</pre>|
+| Memory Consumption |<pre>`300`</pre>|
+| Number of workers |<pre>`1`</pre>|
+| Pod affected percentage|<pre>`100`</pre>|
+
+10. Click on **Apply Changes** and then **Save**
+
+
+### Step 2: Dynamic targeting workloads
+
+1. From the pipeline visual editor switch to yaml
+2. Click the edit button to go into edit mode
+3. Locate the service name (set on previous state) **TARGET_WORKLOAD_NAMES**
+4. Replace it with **backend-<project_name>-deployment-canary** where project_name is the harness project. Summary: add the suffic **-canary** to the target workload
 5. Save the experiment
 
 
+### Step 2: Inject chaos experiments into Delivery pipelines
+
+1. From the module selection menu select Continuous Delivery & GitOps
 
 
-Chaos Guard has two parts: a **Condition** (the *what/where* - which faults are blocked, on which infrastructure) and a **Rule** (the *who/when* - which user groups, during which time windows). A rule enforces one or more conditions, so you build the condition first, then wrap a rule around it.
+   ![Screenshot 2024-11-28 at 14 07 22](https://github.com/user-attachments/assets/898ee27b-7369-47c6-a145-e74b49bb4bed)
 
-1. **Project Settings → Chaos Guard → Conditions → + New Condition.**
-   - Name it (e.g. `block-pod-delete`), Infrastructure type **Kubernetes**.
-   - **WHAT:** leave it on **BLOCKS**, `FAULT` **EQUAL TO** `pod-delete`.
-   - **WHERE:** the infra list is empty, so tick **All Infrastructures** (it fills in as `*`).
-   - **WHICH:** the builder needs a scope - enter `*` in both **NAMESPACE** and **APP LABEL** (= any namespace, any app).
-   - **USING:** enter `*` for the **service account**.
-   - **Save.** *(All four are required before Save enables; `*` just means "match everything.")*
-
-   <img width="1566" height="129" alt="Screenshot 2026-08-11 at 10 20 23" src="https://github.com/user-attachments/assets/29d9e6ed-e4ac-47b5-99d1-f5789f6f1ab6" />
    
-2. **Rules → + New Rule.**
-   - Name it; under **User group(s)** pick **All Project Users** - this keeps the rule inside *your* project, so you can't affect anyone else's.
-   - *(Optional)* add a **time window** to apply the rule during set hours.
+2. From the left hand side menu select pipelines and drill down to the existing pipeline
 
-   <img width="965" height="640" alt="Screenshot 2026-08-11 at 10 23 24" src="https://github.com/user-attachments/assets/3613431d-2469-4e62-a728-187c89c4b224" />
+3. In the existing pipeline, within the Deploy backend stage **after** Canary Deployment and **before** the approval step click on the plus icon to add a new step
+
+4. Add a **Verify** step with the following configuration
+
+| Input                        | Value  | Notes                                                                                            |
+| ---------------------------- | ------ | ------------------------------------------------------------------------------------------------ |
+| Name                         |Verify|                                                                                                  |
+| Continuous Verification Type |Canary|                                                                                                  |
+| Sensitivity                  |Low| This is to define how sensitive the ML algorithms are going to be on deviation from the baseline |
+| Duration                     |10mins|                                                                                                  |
+
+5. Under the verify step click on the plus icon to add a new step in parallel
+
+
+   ![Screenshot 2024-11-28 at 14 28 38](https://github.com/user-attachments/assets/368ba808-d303-43f8-8824-5d2e09367b01)
+
    
-   - **Add Conditions → select `block-pod-delete` → Done → Save.**
-  
-   <img width="1094" height="616" alt="Screenshot 2026-08-11 at 10 23 34" src="https://github.com/user-attachments/assets/7feb1cb4-acdc-40a7-9ca5-35756ec6e1f9" />
+6. Add a **chaos** step with the following configuration
 
-   - Click **Enable** to enable your Rule.
-  
-   <img width="1581" height="99" alt="Screenshot 2026-08-11 at 10 25 56" src="https://github.com/user-attachments/assets/286fb156-d77b-4b69-af99-56ae44018dc6" /> 
-   
-3. Go back to your **`my-pod-delete`** experiment from Step 5 and click **Run**.
+| Input                        | Value  |
+| ---------------------------- | ------ |
+| Name                         |Chaos|
+| Select Chaos Experiment |pod-memory|
+|  Expected Resilience Score|50| 
 
-> The run is blocked **before it starts**. Chaos Guard sits on top of your normal access controls: access decides *who can act*; Chaos Guard decides *what and when - even for people who otherwise could*.
+7. Click on Apply Changes
 
-> *Why block `pod-delete` here?* Only so you can watch the guardrail fire against the experiment you already built. In production you'd typically block **destructive node-level faults** (drain a node, node restart) so no one can take out a whole node - same mechanism, just a different fault in the Condition.
+8. Click **Save** and then click **Run** to execute the pipeline with the following inputs.
 
-## Step 7 · Gate a canary deployment on resilience
-*Goal: make resilience an automatic quality gate in your pipeline.*
-1. Module menu → **Continuous Delivery & GitOps** → **Pipelines** → open the existing pipeline.
+| Input       | Value | Notes       |
+| ----------- | ----- | ----------- |
+| Branch Name |main| Leave as is |
 
-   <img width="785" height="87" alt="Screenshot 2026-08-11 at 14 01 45" src="https://github.com/user-attachments/assets/cf67f888-1f06-4504-b939-9565ac1d4fef" />
-   
-3. In the **backend** stage's **Canary Deployment** phase (after the Canary Deployment, before the Canary Delete), click **+** to add a step → **AI Verify**:
+9. After 10 minutes review what happened with the execution 
 
-   <img width="331" height="232" alt="Screenshot 2026-08-11 at 14 04 08" src="https://github.com/user-attachments/assets/688e9d99-4f85-4a06-8b51-c5317389277c" />
-   
-   - Name `Verify`, Type `Canary`, Sensitivity `Low`, Duration `10 mins`
 
-   <img width="600" height="642" alt="Screenshot 2026-08-11 at 14 06 42" src="https://github.com/user-attachments/assets/36318017-78ea-4104-8388-2244f4bd7473" />
-   
-4. Under the Verify step, click **+** to add a step **in parallel** → **Chaos Experiment**:
-   - Name `Chaos`, Experiment: `my-pod-delete` (or the template experiment), Expected Resilience Score `50`
-   
-   <img width="600" height="767" alt="Screenshot 2026-08-11 at 14 09 05" src="https://github.com/user-attachments/assets/3ac08e64-863a-4aa3-845b-7aedb36ac030" />
+<img width="955" height="262" alt="image" src="https://github.com/user-attachments/assets/0d311c10-3eaf-425e-85b6-0a0c04fdca2b" />
 
-   <img width="1143" height="749" alt="Screenshot 2026-08-11 at 14 10 04" src="https://github.com/user-attachments/assets/b7b6d6ef-bc05-49d7-8d15-fa2b2f51dc79" />
-   
-6. **Apply Changes → Save → Run** (Branch `main`).
-7. After it runs, review the result: if the resilience score is ≥ 50 the canary proceeds; if not, it holds / rolls back.
 
-> You've turned resilience into a deployment gate - chaos running **inside** your pipeline, not as a separate tool.
+### What was achieved
 
-**That's the core lab.** The optional steps below go deeper.
-
----
-
-# Part 2 - Optional
-
-## Step 8 · Share your experiment as a template
-1. Open your `my-pod-delete` experiment → save it **as a template** at **org** level.
-2. Have a teammate (or switch to another project) → **Create from Template** → run it with their own values.
-
-> One definition, reused by many teams - only the inputs change.
-
-## Step 9 · Run a load test (Locust)
-1. Left menu → **Load Testing**.
-2. Open the sample **Locust** test and run it.
-
-> You've generated load. Real-world tip: run chaos *while* under load for a realistic test.
-
-## Step 10 · Get notified & see trends
-1. Configure a **Slack** or **Microsoft Teams** notification for an experiment.
-2. Open the **Dashboard** to see pass/fail and your Resilience Score trend over time.
-
-> Now experiments can run unattended and report back to your team.
-
-## Step 11 · Explore the fault library (Enterprise ChaosHub)
-1. Browse the **Enterprise ChaosHub**.
-2. See the built-in faults across Kubernetes, AWS, Azure, GCP, VMware, Linux, and Windows - plus the option to author your own custom faults.
-
-> You've seen the breadth of what you can test.
-
----
-
-## Values your facilitator will confirm
-- `<project_id>` - your Harness project id (used in the app URL).
-- Your **backend** deployment name (`backend-<project_id>-deployment`). *(Your namespace you can find yourself - see Step 4: it's your org name without the `-org` suffix, plus `-ns`.)*
-- The Prometheus endpoint and the exact PromQL query for Step 5.
-- Environment / infrastructure names, if different from `prod` / `k8s`.
-
----
-
+- **Deployed application changes safely using a canary strategy**
+- **Validated the canary in real time using Continuous Verification**
+- **Injected controlled memory pressure directly against the canary workload**
+- **Tested application health and resilience in parallel before promotion**
+- **Protected production with embedded rollback when verification or resilience checks fail**
+- **Combined deployment, verification, chaos testing, and recovery into one automated delivery flow**
