@@ -62,12 +62,16 @@ score is the weighted average across faults. 10/10 probes pass → 100%; 5/10 �
 
 Participants should NOT build these; they must exist so the workshop starts fast.
 
-- [ ] Kubernetes cluster + the DevSecOps sample app deployed (gateway/backend services). `⟨verify⟩`
+- [ ] Kubernetes cluster + the sample app deployed (**frontend** + **backend** web services). Confirmed: namespace `<group>-ns` (e.g. `barclays517-ns`), deployments `frontend-<project_id>-deployment` / `backend-<project_id>-deployment`, infra `prod/k8s`.
 - [ ] Harness project per participant (or shared org with per-participant projects). `⟨verify⟩`
 - [ ] Discovery Agent installable / chaos infrastructure connected. `⟨verify⟩`
 - [ ] **Prometheus** running and reachable from the execution plane, app metrics exposed. `⟨verify⟩`
-- [ ] A **pre-built Experiment Template**: "Gateway Service Pod Restart" with a health-check probe pattern
-      (steady-state probe at start → during → end). Fault = **Pod Delete/Restart** (impact is visible in logs; CPU/stress is not). `⟨build⟩`
+- [x] Account-level **Experiment Templates** in the `workshop` ChaosHub (built by Sagar):
+      **`service-restart-test`** (Pod Delete on the backend + `svc-health-check` HTTP probes before/during/end) and
+      **`service-availability-zone-failure`** (zone-scoped Pod Network Loss + the same HTTP probes), plus the
+      **`svc-health-check`** probe template (HTTP GET → `200` on the frontend URL). All parametric via inputs
+      `PROJECT_ID` / `TARGET_NAMESPACE` / `TARGET_SERVICE_NAME` (+ `TARGET_ZONE` for the AZ one); no auth/JWT.
+      Module 3 uses `service-restart-test`.
 - [ ] An existing **CD pipeline** deploying the app with a **canary** stage (for Module 7). `⟨verify⟩`
 - [ ] A **sample Locust** load test in the environment (for the demo). `⟨build⟩`
 - [ ] Notification channel (Slack or MS Teams) wired to a user group (for the extension module). `⟨verify⟩`
@@ -112,7 +116,7 @@ Participants should NOT build these; they must exist so the workshop starts fast
 
 **Exact steps:** `TODO` (auto-generate + run + Run History is new - write fresh; the "Only a few" chooser and map nav are captured in README Step 3).
 
-**Talk track:** "the map isn't just a picture - it seeds *and scores* experiments." The built-in probe is **pod-level** (did the pod recover) - a real score, but the *app-level* HTTP probe ("is the app returning 200?") comes when they build their own in Module 4. Keep this the friendly first run; save the deep observability walkthrough for Module 3. `⟨verify⟩` what probe the Module 3 template ships with.
+**Talk track:** "the map isn't just a picture - it seeds *and scores* experiments." The built-in probe is **pod-level** (did the pod recover) - a real score, but the *app-level* HTTP probe ("is the app returning 200?") comes when they build their own in Module 4. Keep this the friendly first run; save the deep observability walkthrough for Module 3. (Confirmed: `service-restart-test` ships with **app-level HTTP** health-check probes - the pod-level → HTTP step-up.)
 
 **Differentiator:** one click turns a discovered app into a proposed, **scored** experiment - no blank page, no hand-entered targets.
 
@@ -121,9 +125,9 @@ Participants should NOT build these; they must exist so the workshop starts fast
 **Objective:** the anchor module. Now the standardized, reusable way - import a shared template and slow down on the observability walkthrough (logs, probe pattern, score). Module 2 was the quick first run; this is the deep dive.
 
 **Flow:**
-1. New Experiment → **Create From Template** (dropdown) → pick **"Gateway Service Pod Restart"**.
+1. New Experiment → **Create From Template** (dropdown) → pick **`service-restart-test`**.
 2. Import **as copy** (so they can tinker) vs **as reference** (locked) - explain both.
-3. Select **Environment / Infrastructure** (`prod` / `k8s` `⟨verify⟩`).
+3. Select **Environment / Infrastructure** (`prod` / `k8s`), then fill inputs `PROJECT_ID` / `TARGET_NAMESPACE` / `TARGET_SERVICE_NAME` (= `backend-<project_id>-deployment`).
 4. **Run it.**
 5. **Walk the run - this is the money shot:**
    - Timeline / graph view of fault + probes.
@@ -131,7 +135,7 @@ Participants should NOT build these; they must exist so the workshop starts fast
    - Probes evaluated (health check at start / during / end = steady-state pattern).
    - **Resilience Score** + report.
 
-**Exact steps:** `TODO` (template create-from + run; observability walkthrough is new - write fresh).
+**Exact steps:** create-from-`service-restart-test` + fill inputs + run are captured in README Step 4; the observability walkthrough (timeline/logs/probe pattern/score) is new - write fresh.
 
 **Talk track:** why **Pod Restart** first - the impact is legible in logs (Sagar's tip). Point out the start/during/end health-probe pattern as the *recommended* way to establish and re-verify steady state. Observability + score is what customers actually care about.
 
@@ -269,7 +273,7 @@ Legend: "Best" = clear category leader, "Yes" = supported, "Partial" = limited/i
 
 Verify these live in the workshop tenant, then fill in the `TODO` / `⟨verify⟩` steps:
 
-- [ ] **Templates location:** ChaosHub vs Settings → Templates + Resilience Probes (docs say custom/Git ChaosHubs were removed; Sagar demoed a ChaosHub). Affects Modules 3 & 7.
+- [x] **Templates location:** confirmed - account-level `workshop` ChaosHub (Account Settings → ChaosHub → `workshop`), with the experiment templates under the **Experiments** tab and `svc-health-check` under **Probes**. Affects Modules 3 & 7.
 - [ ] **Load Testing frameworks:** Locust GA; confirm JMeter/K6 availability / feature flags. Module 8.
 - [ ] **OOTB fault count** to quote. Module 10.
 - [ ] **Prometheus probe** PromQL + endpoint against the lab's actual metrics. Module 4.

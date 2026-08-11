@@ -91,22 +91,31 @@ Now map them:
 
 ## Step 4 · Run a ready-made experiment (from a template)
 *Goal: now do it the reusable way - run a standardized, ready-made experiment from a template.*
+
+> **Hypothesis:** deleting a backend pod should **not** cause 5xx errors on the frontend - the deployment keeps a healthy replica and recovers within seconds.
+
 1. Go to **Chaos Experiments** → click the dropdown next to **New Experiment** → **Create from Template**.
 
 <img width="246" height="224" alt="Screenshot 2026-08-10 at 17 37 57" src="https://github.com/user-attachments/assets/ad6b7a9b-d946-434e-a799-1991bd7443eb" />
 
-2. Select the **Gateway Service Pod Restart** template.
+2. Select the **service-restart-test** template.
 3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
 4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
-5. Continue to the experiment and click **Run**.
+5. Fill the template inputs so it targets your app:
+   - `PROJECT_ID`: your `<project_id>`
+   - `TARGET_NAMESPACE`: your app's namespace *(your facilitator will confirm)*
+   - `TARGET_SERVICE_NAME`: your **backend** deployment (e.g. `backend-<project_id>-deployment`)
+6. Continue to the experiment and click **Run**.
 
 While it runs (and after), explore these - they're the whole point:
 - The **timeline / graph**: the fault and its probes.
 - The **logs**: you can see *exactly which pod was deleted and which new pod replaced it*, without ever touching `kubectl`.
-- The **probes**: a health check runs **before, during, and after** the fault. That's how you establish and re-confirm "steady state."
+- The **probes**: an **app-level HTTP check** (is your page returning `200`?) runs **before, during, and after** the fault - a step up from Step 3's pod-level probe. That's how you establish and re-confirm "steady state."
 - Your **Resilience Score** and the **report**.
 
 > Same loop as Step 3, but from a shared template - one definition many teams can reuse.
+
+> *Going further (optional):* there's a second ready-made template, **service-availability-zone-failure**, that simulates a whole availability-zone outage (network loss across a zone) and checks the same frontend health. Import and run it the same way if you finish early.
 
 ## Step 5 · Build your own experiment
 *Goal: create one from scratch. Peek back at Step 4 if you get stuck.*
