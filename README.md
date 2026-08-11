@@ -261,15 +261,16 @@ During the previous step we created a reusable probe that can be attached to any
 1. Run the experiment
 2. While the pod delete fault is running click on the prometheus node
 3. Review the logs of the prometheus validation
+
    
 <img width="2599" height="201" alt="image" src="https://github.com/user-attachments/assets/03ddda57-dfb6-4f35-95ef-a2b52de3622a" />
 
-### Summary
-- ** Reusable Prometheus APM probe in Harness Chaos Engineering.
-- ** Parameterise the probe so it can be reused across different namespaces and workloads.
-- ** Query live application/container telemetry from Prometheus during a chaos experiment.
-- ** Define an objective resilience threshold — in this case, ensuring container memory remains below 700 MB.
-- ** Automatically evaluate the application's behaviour while the failure is occurring.
+### Summary
+- **Reusable Prometheus APM probe in Harness Chaos Engineering**
+- **Parameterise the probe so it can be reused across different namespaces and workloads**
+- **Query live application/container telemetry from Prometheus during a chaos experiment**
+- **Define an objective resilience threshold — in this case, ensuring container memory remains below 700 MB**
+- **Automatically evaluate the application's behaviour while the failure is occurring**
 
 
 
