@@ -63,7 +63,11 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 Now map them:
 4. Double-click the **DA-K8s** agent.
 5. Open the **Application Maps** tab → **Create New Application Map**.
-6. Name it <pre>`workshop-am`</pre>, select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for <pre>`web-backend-<project_id>`</pre> and <pre>`web-frontend-<project_id>`</pre>.
+6. Name it <pre>`workshop-am`</pre>
+select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for
+<pre>`web-backend-<project_id>`</pre>
+and
+<pre>`web-frontend-<project_id>`</pre>
 
 > You now have an application map of your services.
 
