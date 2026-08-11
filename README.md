@@ -217,7 +217,7 @@ avg(container_memory_rss{namespace=\"<+probe.variables.namespace>\",container=\"
 |--------|--------|-------|
 | **Type** | Float ||
 | **Comparison Criteria** | <pre>`<`</pre> |Less than|
-| **Value** | <pre>`500000000`</pre> ||
+| **Value** | <pre>`700000000`</pre> ||
 
 10. Click next to setup **Properties**
 11. Modify only the number of attempts
@@ -258,20 +258,11 @@ During the previous step we created a reusable probe that can be attached to any
 
 
 ### Step 3: Validate the probe and explain results
+1. Run the experiment
+2. While the pod delete fault is running click on the prometheus node
+3. Review the logs of the validation
 
 
-
-
-
-
-<img width="967" height="446" alt="Screenshot 2026-08-11 at 09 09 25" src="https://github.com/user-attachments/assets/99da7e86-44b4-473a-a513-59442a74e102" />
-
-> Have you seen all the APM Options available?
-
-7. **Save**, then **Run**.
-8. While it runs, refresh your app tab (`http://<project_id>.cie-bootcamp.co.uk`) - watch it stay available as pods are killed and recreated.
-
-> Compare your Resilience Score to Step 4's.
 
 ## Step 6 · Make chaos safe with Chaos Guard
 *Goal: guardrails so experiments can't cause a real outage.*
