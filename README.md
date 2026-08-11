@@ -290,11 +290,49 @@ Establish guardrails to avoid unwanted experiments running based on environment,
 > [!NOTE]
 > Condition define the criteria of which faults are blocked, on which infrastructure
 
+1. From the **left-hand side menu**, select **Project Settings**
+2. Then select **Chaos Guard**
+3. At the top navigation there are **Rules** and **Conditions**
+4. Navigate to the conditions
+5. Create a new condition by clicking **+ New Condition**
 
 
+> [!WARNING]
+> Change the infrastructure to **Kubernetes Harness Infrastructure**
+
+6. Then Setup as follows
+
+## What
+| Field | Value | Notes |
+|--------|--------|-------|
+| **name** | <pre>`amcondition`</pre>  | |
+| **FAULT** | <pre>`pod-delete`</pre>  ||
 
 
+## Where
 
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Infrastructure** | `k8s` | **dropdown**|
+
+## Which
+
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Application Map** | `workshopam` | **dropdown**|
+| **Namespace** | `dropdown` | **dropdown**|
+| **Services** | `backend....` | **dropdown**|
+
+
+## Using
+
+This condition BLOCKS any service account `NOT EQUAL TO` the following
+
+| Field |
+|--------|
+|`sa` |
+
+This condition `ALLOWS` the usage of unverified probes
 
 
 
