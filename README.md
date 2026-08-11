@@ -179,8 +179,10 @@ Chaos Guard has two parts: a **Condition** (the *what/where* - which faults are 
 1. **Project Settings → Chaos Guard → Conditions → + New Condition.**
    - Name it (e.g. `block-pod-delete`), Infrastructure type **Kubernetes**.
    - **WHAT:** leave it on **BLOCKS**, `FAULT` **EQUAL TO** `pod-delete`.
-   - **WHERE:** select your **`k8s`** infrastructure (required).
-   - **Save.**
+   - **WHERE:** the infra list is empty, so tick **All Infrastructures** (it fills in as `*`).
+   - **WHICH:** the builder needs a scope - enter `*` in both **NAMESPACE** and **APP LABEL** (= any namespace, any app).
+   - **USING:** enter `*` for the **service account**.
+   - **Save.** *(All four are required before Save enables; `*` just means "match everything.")*
 2. **Rules → + New Rule.**
    - Name it; under **User group(s)** pick **All Project Users** - this keeps the rule inside *your* project, so you can't affect anyone else's.
    - *(Optional)* add a **time window** to also block runs during set hours.
