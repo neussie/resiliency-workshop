@@ -64,10 +64,7 @@ Now map them:
 4. Double-click the **DA-K8s** agent.
 5. Open the **Application Maps** tab → **Create New Application Map**.
 6. Name it <pre>`workshop-am`</pre>
-select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for
-<pre>`web-backend-<project_id>`</pre>
-and
-<pre>`web-frontend-<project_id>`</pre>
+select your app's services (use the search box), and click **Save**. If you have trouble finding them try searching for `web-backend-<project_id>` and `web-frontend-<project_id>`.
 
 > You now have an application map of your services.
 
@@ -102,18 +99,15 @@ and
 
 <img width="246" height="224" alt="Screenshot 2026-08-10 at 17 37 57" src="https://github.com/user-attachments/assets/ad6b7a9b-d946-434e-a799-1991bd7443eb" />
 
-2. Select the **service-restart-test** template.
+2. Select the **service-restart** template.
 3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
 4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
 
 <img width="1361" height="225" alt="Screenshot 2026-08-11 at 07 30 03" src="https://github.com/user-attachments/assets/b99d486d-35b6-49fd-a0e4-e21f366393c2" />
 
-<img width="703" height="393" alt="Screenshot 2026-08-11 at 07 32 22" src="https://github.com/user-attachments/assets/183e3798-b649-49c3-8ec6-5b369f9a3935" />
+<img width="498" height="578" alt="Screenshot 2026-08-11 at 13 45 31" src="https://github.com/user-attachments/assets/d489edce-9d96-4b3d-8b43-aec0c5bbc4e8" />
 
-5. Fill the template inputs so it targets your app:
-   - `PROJECT_ID`: your `<project_id>`
-   - `TARGET_NAMESPACE`: your app's namespace. It's based on your **org**, not your project - hover over **Project** in the left nav to find your org name (e.g. `barclays517-org`); the namespace is that name **without the `-org` suffix**, plus `-ns` (e.g. `barclays517-ns`).
-   - `TARGET_SERVICE_NAME`: your **backend** deployment (e.g. `backend-<project_id>-deployment`)
+5. The template will take your app variables automatically, you only have to fill the name.
 6. Continue to the experiment and click **Run**.
 
 While it runs (and after), explore these - they're the whole point:
