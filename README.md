@@ -131,15 +131,11 @@ While it runs (and after), explore these - they're the whole point:
    - Workload Kind: `deployment`
    - Namespace: pick yours from the dropdown
    - Name: pick your **backend** deployment
-5. Add a probe to check the app stays healthy:
-   - **+ Add probe → HTTP probe**
-   - URL: `http://<project_id>.cie-bootcamp.co.uk`
-   - Criteria: `==`  Response Code: `200`
-   - Properties: Timeout `20s`, Interval `2s`, Attempts `5`, Initial Delay `5s`
-6. Add a second probe to check a metric stays within bounds:
-   - **+ Add probe → Prometheus probe**
-   - Endpoint: your Prometheus URL *(your facilitator will confirm this)*
-   - PromQL query + criteria: *(your facilitator will give you the exact query - e.g. "error rate stays below 5%")*
+5. Attach a probe so your score reflects whether the **app** stayed healthy:
+   - On the canvas, click the **+** after your fault → **Add a probe**.
+   - In **Select a Probe**, pick a ready-made **`svc-health-check`** HTTP probe (it checks your frontend keeps returning `200`) → **Add to Experiment**.
+   - *Probes are reusable **resources** here - you select an existing one in the experiment. To author your own, use **Project Settings → Chaos Probes → + New Probe**.*
+6. *(Optional stretch)* Add a **metric** probe. There's no Prometheus probe yet, so create it first: **Project Settings → Chaos Probes → + New Probe → APM Probe → APM Type: Prometheus**, using your facilitator's Prometheus endpoint + PromQL (e.g. "error rate below 5%"). Then back in the experiment: **+ → Add a probe** → select it.
 7. **Save**, then **Run**.
 8. While it runs, refresh your app tab (`http://<project_id>.cie-bootcamp.co.uk`) - watch it stay available as pods are killed and recreated.
 

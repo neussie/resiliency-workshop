@@ -148,13 +148,13 @@ Participants should NOT build these; they must exist so the workshop starts fast
 **Flow:**
 1. New Experiment → **Blank Canvas** → Add Fault → **Pod Delete**.
 2. Target a **discovered** workload (from Module 1) - kind/namespace/name.
-3. Add probes:
-   - **HTTP probe** on the app health endpoint (criteria `== 200`).
-   - **Prometheus probe**: a **PromQL** steady-state check (e.g. error rate below threshold / p95 latency). This is the Prometheus story on the whiteboard.
+3. Add a probe - **click the + on the canvas → Add a probe** (probes are reusable resources here; you *select* an existing one, you don't type one inline):
+   - **HTTP probe**: pick a ready-made **`svc-health-check`** probe (app-level `== 200` on the frontend) → **Add to Experiment**.
+   - *(Optional stretch)* **Prometheus probe**: a **PromQL** steady-state check (e.g. error rate below threshold / p95 latency) - the Prometheus story on the whiteboard. None is pre-seeded, so create it first via **Chaos Probes → New Probe → APM → Prometheus**, then attach it.
 4. Run. **While it runs, open the app endpoint** so they *see* the app stay alive / degrade in real time.
 5. Compare Resilience Score to Module 3.
 
-**Exact steps:** `TODO` - HTTP probe config + endpoint format exist in [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps); **Prometheus probe (PromQL + endpoint) is new - write fresh and `⟨verify⟩` the PromQL against the lab's metrics.**
+**Exact steps:** probe *creation* lives in **Project Settings → Chaos Probes → + New Probe** (HTTP config + endpoint format in [Appendix B](#appendix-b--previous-lab-reference-for-exact-steps)); inside the experiment you **select** an existing probe (**+ → Add a probe → Select a Probe**). Confirmed: `svc-health-check` HTTP probes are pre-seeded (frontend → `200`); **no Prometheus probe exists - create it via New Probe → APM → Prometheus and `⟨verify⟩` the PromQL against the lab's metrics.**
 
 **Talk track:** the probe is the hypothesis. Tie the PromQL back to an SLO. Reinforce: probes drive the score, faults don't.
 
