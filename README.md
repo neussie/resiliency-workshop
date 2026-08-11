@@ -206,20 +206,29 @@ blah blah blah
 ```yaml
 avg(container_memory_rss{namespace=\"<+probe.variables.namespace>\",container=\"<+probe.variables.container>\"})
 ```
-9. Click next to setup **Properties**
-10. Modify only the number of attempts
+9. Scroll down to setup the condition
+
+| Field | Value | Notes |
+|--------|--------|-------|
+| **Type** | Float ||
+| **Comparison Criteria** | <pre>`<`</pre> |Less than|
+| **Value** | <pre>`500000000`</pre> ||
+
+10. Click next to setup **Properties**
+11. Modify only the number of attempts
 
 | Field | Value | Notes |
 |--------|--------|-------|
 | **Attempts** | <pre>`10`</pre>  ||
 
-
-
-
-
-
-
 ### Step 2: Attach a probe
+
+During the previous step we created a reusable probe that can be attached to any of our experiments. Now it is time to add it into the experiment we created previously. 
+
+1. Valida
+
+
+
 
 ### Step 3: Validate the probe and explain results
 
