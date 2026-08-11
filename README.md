@@ -103,12 +103,12 @@ select your app's services (use the search box), and click **Save**. If you have
 3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
 4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
 
-<img width="1361" height="225" alt="Screenshot 2026-08-11 at 07 30 03" src="https://github.com/user-attachments/assets/b99d486d-35b6-49fd-a0e4-e21f366393c2" />
-
 <img width="498" height="578" alt="Screenshot 2026-08-11 at 13 45 31" src="https://github.com/user-attachments/assets/d489edce-9d96-4b3d-8b43-aec0c5bbc4e8" />
 
 5. The template will take your app variables automatically, you only have to fill the name.
 6. Continue to the experiment and click **Run**.
+
+<img width="1361" height="225" alt="Screenshot 2026-08-11 at 07 30 03" src="https://github.com/user-attachments/assets/b99d486d-35b6-49fd-a0e4-e21f366393c2" />
 
 While it runs (and after), explore these - they're the whole point:
 - The **timeline / graph**: the fault and its probes.
