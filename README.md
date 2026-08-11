@@ -101,6 +101,11 @@ Now map them:
 2. Select the **service-restart-test** template.
 3. Choose **Import as copy** (so you can tweak it) - the alternative, *Import as reference*, is locked/read-only.
 4. Select your infrastructure: Environment `prod`, Infrastructure `k8s`.
+
+<img width="1361" height="225" alt="Screenshot 2026-08-11 at 07 30 03" src="https://github.com/user-attachments/assets/b99d486d-35b6-49fd-a0e4-e21f366393c2" />
+
+<img width="703" height="393" alt="Screenshot 2026-08-11 at 07 32 22" src="https://github.com/user-attachments/assets/183e3798-b649-49c3-8ec6-5b369f9a3935" />
+
 5. Fill the template inputs so it targets your app:
    - `PROJECT_ID`: your `<project_id>`
    - `TARGET_NAMESPACE`: your app's namespace *(your facilitator will confirm)*
