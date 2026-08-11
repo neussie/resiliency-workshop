@@ -4,14 +4,6 @@ Welcome! In this lab you'll use **Harness Resiliency Testing** to deliberately b
 application on Kubernetes, prove it can take the hit, and then automate that proof inside your
 delivery pipeline.
 
-## What you'll do
-- Auto-discover your services and map them.
-- Run a ready-made chaos experiment and read the results.
-- Build your own experiment and watch your app survive (or not) in real time.
-- Put guardrails on chaos so it's safe to run.
-- Gate a canary deployment on a resilience score.
-- *(Optional)* share experiments as templates, run a load test, set up notifications, and explore the fault library.
-
 ## What is an experiment?
 An **experiment** is made of three things:
 - **Faults**: the attack (e.g. *delete a pod*).
@@ -27,7 +19,7 @@ Everything below is already set up for you:
 - Prometheus collecting metrics from the app.
 - A pre-built experiment template and a CD pipeline.
 
-We'll provide you your Harness login and your **project ID**. Wherever you see `<project_id>`, use yours. 
+We'll provide your Harness login and your **project ID**. Wherever you see `<project_id>`, use yours.
 
 ---
 
@@ -44,8 +36,6 @@ We'll provide you your Harness login and your **project ID**. Wherever you see `
 | ❤️‍🩹 7 | Application Delivery Meets Resilience | Gate a canary deployment on health and resilience. |
 
 ---
-
-# Part 1 - Core lab
 
 ## 🚀 0. Deploy Your Application
 
@@ -296,14 +286,14 @@ Create resiliency probes leveraging APM tooling
 
 6. Click on **Next** to setup **variables**
 
-## Variable 1: namespace
+#### Variable 1: namespace
 | Field | Value | Notes |
 |--------|--------|-------|
 | **Type** | String ||
 | **Name** | <pre>`namespace`</pre> ||
 | **Value** | Runtime Input |**Click the Sigma icon next to the input box to set the variable as runtime input**|
 
-## Variable 2: container
+#### Variable 2: container
 | Field | Value | Notes |
 |--------|--------|-------|
 | **Type** | String ||
@@ -374,7 +364,7 @@ During the previous step we created a reusable probe that can be attached to any
 - **Reusable Prometheus APM probe in Harness Chaos Engineering**
 - **Parameterise the probe so it can be reused across different namespaces and workloads**
 - **Query live application/container telemetry from Prometheus during a chaos experiment**
-- **Define an objective resilience threshold — in this case, ensuring container memory remains below 700 MB**
+- **Define an objective resilience threshold, in this case ensuring container memory remains below 700 MB**
 - **Automatically evaluate the application's behaviour while the failure is occurring**
 
 
@@ -407,20 +397,20 @@ Establish guardrails to avoid unwanted experiments running based on environment,
 
 6. Then Setup as follows
 
-## What
+#### What
 | Field | Value | Notes |
 |--------|--------|-------|
 | **name** | <pre>`amcondition`</pre>  | |
 | **FAULT** | <pre>`pod-delete`</pre>  ||
 
 
-## Where
+#### Where
 
 | Field | Value | Notes |
 |--------|--------|-------|
 | **Infrastructure** | `k8s` | **dropdown**|
 
-## Which
+#### Which
 
 | Field | Value | Notes |
 |--------|--------|-------|
@@ -429,7 +419,7 @@ Establish guardrails to avoid unwanted experiments running based on environment,
 | **Services** | `backend....` | **dropdown**|
 
 
-## Using
+#### Using
 
 This condition BLOCKS any service account `NOT EQUAL TO` the following
 
